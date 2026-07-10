@@ -11,8 +11,15 @@ mini-agent-runtime/
 ├── notes/      每日学习资料
 ├── book/       未来正式书稿
 ├── scripts/    文档导出脚本
+├── AGENT.md    AI 协作规范
+├── WORKFLOW.md 学习与产出流程
 └── README.md   项目入口
 ```
+
+## 项目规范
+
+- [AI 协作规范](AGENT.md)
+- [学习与产出流程](WORKFLOW.md)
 
 ## 学习笔记
 

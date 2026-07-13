@@ -6,6 +6,7 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml.ns import qn
 from docx.shared import Inches, Pt
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT
@@ -94,6 +95,24 @@ def strip_inline_markup(text: str) -> str:
     return text
 
 
+DOCX_BODY_FONT = "Arial Unicode MS"
+DOCX_CODE_FONT = "Menlo"
+
+
+def set_run_font(run, font_name: str, size: Pt | None = None):
+    run.font.name = font_name
+    run._element.rPr.rFonts.set(qn("w:eastAsia"), font_name)
+    if size is not None:
+        run.font.size = size
+
+
+def set_style_font(style, font_name: str, size: Pt | None = None):
+    style.font.name = font_name
+    style._element.rPr.rFonts.set(qn("w:eastAsia"), font_name)
+    if size is not None:
+        style.font.size = size
+
+
 def export_docx(blocks, output: Path):
     doc = Document()
     section = doc.sections[0]
@@ -103,21 +122,28 @@ def export_docx(blocks, output: Path):
     section.right_margin = Inches(0.85)
 
     styles = doc.styles
-    styles["Normal"].font.name = "Arial"
-    styles["Normal"].font.size = Pt(10.5)
+    set_style_font(styles["Normal"], DOCX_BODY_FONT, Pt(10.5))
 
     for kind, text in blocks:
         text = strip_inline_markup(text)
         if kind == "h1":
             p = doc.add_heading(text, level=0)
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            for run in p.runs:
+                set_run_font(run, DOCX_BODY_FONT)
         elif kind.startswith("h"):
             level = min(int(kind[1:]), 4)
-            doc.add_heading(text, level=level)
+            p = doc.add_heading(text, level=level)
+            for run in p.runs:
+                set_run_font(run, DOCX_BODY_FONT)
         elif kind == "bullet":
-            doc.add_paragraph(text, style="List Bullet")
+            p = doc.add_paragraph(text, style="List Bullet")
+            for run in p.runs:
+                set_run_font(run, DOCX_BODY_FONT)
         elif kind == "number":
-            doc.add_paragraph(text, style="List Number")
+            p = doc.add_paragraph(text, style="List Number")
+            for run in p.runs:
+                set_run_font(run, DOCX_BODY_FONT)
         elif kind == "quote":
             p = doc.add_paragraph(text)
             p.paragraph_format.left_indent = Inches(0.25)
@@ -125,20 +151,22 @@ def export_docx(blocks, output: Path):
             p.paragraph_format.space_after = Pt(6)
             for run in p.runs:
                 run.italic = True
+                set_run_font(run, DOCX_BODY_FONT)
         elif kind == "code":
             p = doc.add_paragraph()
             p.paragraph_format.left_indent = Inches(0.2)
             p.paragraph_format.space_before = Pt(4)
             p.paragraph_format.space_after = Pt(8)
             run = p.add_run(text)
-            run.font.name = "Courier New"
-            run.font.size = Pt(8.5)
+            set_run_font(run, DOCX_CODE_FONT, Pt(8.5))
         elif kind == "rule":
             p = doc.add_paragraph()
             p.paragraph_format.space_after = Pt(6)
         else:
             p = doc.add_paragraph(text)
             p.paragraph_format.space_after = Pt(6)
+            for run in p.runs:
+                set_run_font(run, DOCX_BODY_FONT)
 
     doc.save(output)
 

@@ -25,6 +25,7 @@ mini-agent-runtime/
 
 - [Day1：AI Agent 到底是什么？](notes/day01-agent-basics/day01-agent-basics.md)
 - [Day2：Agent Runtime —— 谁才是真正的大脑？](notes/day02-runtime/day02-runtime.md)
+- [Day3：Runtime Architecture](notes/day03-runtime-architecture/README.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 

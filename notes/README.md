@@ -6,6 +6,7 @@
 
 - [Day1：AI Agent 到底是什么？](day01-agent-basics/day01-agent-basics.md)
 - [Day2：Agent Runtime —— 谁才是真正的大脑？](day02-runtime/day02-runtime.md)
+- [Day3：Runtime Architecture](day03-runtime-architecture/README.md)
 
 ## 组织规则
 
@@ -25,6 +26,12 @@ notes/
     ├── day02-runtime.md
     ├── day02-runtime.pdf
     └── day02-runtime.docx
+
+└── day03-runtime-architecture/
+    ├── README.md
+    ├── day03-01-runtime-architecture-design-principles.md
+    ├── day03-01-runtime-architecture-design-principles.pdf
+    └── day03-01-runtime-architecture-design-principles.docx
 ```
 
 规则：
@@ -34,3 +41,4 @@ notes/
 - DOCX 是可编辑版。
 - 原始资料放在当天目录的 `source/` 中。
 - 后续图示、流程图、代码草稿可以放进当天目录的 `assets/` 或 `examples/`。
+- 如果某一天被拆成多个小节，统一放在当天目录下平铺管理，例如 `day03-01-xxx.md`、`day03-02-xxx.md`。

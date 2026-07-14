@@ -12,6 +12,10 @@ Day3 会被拆成多个小节，统一放在当前目录下平铺管理。
   - [Markdown 主版本](day03-01-runtime-architecture-design-principles.md)
   - [PDF 阅读版](day03-01-runtime-architecture-design-principles.pdf)
   - [DOCX 可编辑版](day03-01-runtime-architecture-design-principles.docx)
+- Day03-02：Runtime Core Components
+  - [Markdown 主版本](day03-02-runtime-core-components.md)
+  - [PDF 阅读版](day03-02-runtime-core-components.pdf)
+  - [DOCX 可编辑版](day03-02-runtime-core-components.docx)
 
 ## Day3 拆分计划
 
@@ -23,6 +27,10 @@ Day3 会被拆成多个小节，统一放在当前目录下平铺管理。
 ## 核心内容
 
 - Runtime 为什么应该是 Orchestrator
+- Runtime 第一版核心组件：Runtime、Conversation、Message、ContextBuilder、LLMClient、ToolRegistry
+- ContextBuilder 为什么更像 Context Compiler，而不是 Prompt Builder
+- Domain Model 与 Domain Service 在 Runtime 组件中的分类
+- Ownership、State Boundary 与 Tell, Don't Ask
 - Agent Runtime 中的职责边界
 - 副作用应该归属于拥有职责的对象
 - Dependency Direction：底层对象不应该依赖上层对象

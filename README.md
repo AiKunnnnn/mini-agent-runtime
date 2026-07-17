@@ -29,6 +29,8 @@ mini-agent-runtime/
   - [Day03-01：Runtime Architecture Design Principles](notes/day03-runtime-architecture/day03-01-runtime-architecture-design-principles.md)
   - [Day03-02：Runtime Core Components](notes/day03-runtime-architecture/day03-02-runtime-core-components.md)
   - [Day03-03：Conversation & Message Data Model](notes/day03-runtime-architecture/day03-03-conversation-message-data-model.md)
+- [Day04：Runtime 如何思考（How Runtime Thinks）](notes/day04-how-runtime-thinks/README.md)
+  - [Day04 Part A：Prompt 不是 Context](notes/day04-how-runtime-thinks/day04-part-a-prompt-is-not-context.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 
@@ -50,7 +52,7 @@ mini-agent-runtime/
 
 ### Part III：Decision Engine
 
-- Day04：Context Builder
+- Day04：Runtime 如何思考（How Runtime Thinks）
 
 ### Part IV：Execution Engine
 

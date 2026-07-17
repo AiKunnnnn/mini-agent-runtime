@@ -41,7 +41,7 @@ Part II：Runtime Foundation
   Day03：Runtime Architecture
 
 Part III：Decision Engine
-  Day04：Context Builder
+  Day04：Runtime 如何思考（How Runtime Thinks）
 
 Part IV：Execution Engine
   Day05：Tool Calling

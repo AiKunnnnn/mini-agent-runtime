@@ -10,6 +10,8 @@
   - [Day03-01：Runtime Architecture Design Principles](day03-runtime-architecture/day03-01-runtime-architecture-design-principles.md)
   - [Day03-02：Runtime Core Components](day03-runtime-architecture/day03-02-runtime-core-components.md)
   - [Day03-03：Conversation & Message Data Model](day03-runtime-architecture/day03-03-conversation-message-data-model.md)
+- [Day04：Runtime 如何思考（How Runtime Thinks）](day04-how-runtime-thinks/README.md)
+  - [Day04 Part A：Prompt 不是 Context](day04-how-runtime-thinks/day04-part-a-prompt-is-not-context.md)
 
 ## 学习路线
 
@@ -21,10 +23,11 @@
 
 - [Day02：Runtime Overview](day02-runtime/day02-runtime.md)
 - [Day03：Runtime Architecture](day03-runtime-architecture/README.md)
+- [Day04：Runtime 如何思考（How Runtime Thinks）](day04-how-runtime-thinks/README.md)
 
 ### Part III：Decision Engine
 
-- Day04：Context Builder
+- Day04：Runtime 如何思考（How Runtime Thinks）
 
 ### Part IV：Execution Engine
 
@@ -71,6 +74,13 @@ notes/
     ├── day03-03-conversation-message-data-model.md
     ├── day03-03-conversation-message-data-model.pdf
     ├── day03-03-conversation-message-data-model.docx
+    └── source/
+
+└── day04-how-runtime-thinks/
+    ├── README.md
+    ├── day04-part-a-prompt-is-not-context.md
+    ├── day04-part-a-prompt-is-not-context.pdf
+    ├── day04-part-a-prompt-is-not-context.docx
     └── source/
 ```
 

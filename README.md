@@ -26,6 +26,9 @@ mini-agent-runtime/
 - [Day1：AI Agent 到底是什么？](notes/day01-agent-basics/day01-agent-basics.md)
 - [Day2：Agent Runtime —— 谁才是真正的大脑？](notes/day02-runtime/day02-runtime.md)
 - [Day3：Runtime Architecture](notes/day03-runtime-architecture/README.md)
+  - [Day03-01：Runtime Architecture Design Principles](notes/day03-runtime-architecture/day03-01-runtime-architecture-design-principles.md)
+  - [Day03-02：Runtime Core Components](notes/day03-runtime-architecture/day03-02-runtime-core-components.md)
+  - [Day03-03：Conversation & Message Data Model](notes/day03-runtime-architecture/day03-03-conversation-message-data-model.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 
@@ -34,20 +37,35 @@ mini-agent-runtime/
 - DOCX：可编辑版。
 - source：原始材料，仅在当天有源文件时保留。
 
-## 后续计划
+## 学习路线
 
-学习阶段会继续覆盖：
+### Part I：Agent Basics
 
-1. Runtime Architecture
-2. Runtime Loop
-3. Tool Calling
-4. Context Builder
-5. Memory
-6. Streaming Event
-7. Human Approval
-8. MCP
-9. Workflow
-10. Mastra / OpenAI Agents SDK 源码理解
+- [Day01：Agent Basics](notes/day01-agent-basics/day01-agent-basics.md)
+
+### Part II：Runtime Foundation
+
+- [Day02：Runtime Overview](notes/day02-runtime/day02-runtime.md)
+- [Day03：Runtime Architecture](notes/day03-runtime-architecture/README.md)
+
+### Part III：Decision Engine
+
+- Day04：Context Builder
+
+### Part IV：Execution Engine
+
+- Day05：Tool Calling
+
+### Part V：Memory System
+
+- Day06：Memory
+
+### Part VI：Advanced Runtime
+
+- Day07：Streaming Event
+- Day08：Human Approval
+- Day09：Workflow
+- Day10：MCP
 
 后续实现阶段会在 `src/` 中逐步实现一个最小可运行的 `mini-agent-runtime`。
 

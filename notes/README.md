@@ -7,6 +7,39 @@
 - [Day1：AI Agent 到底是什么？](day01-agent-basics/day01-agent-basics.md)
 - [Day2：Agent Runtime —— 谁才是真正的大脑？](day02-runtime/day02-runtime.md)
 - [Day3：Runtime Architecture](day03-runtime-architecture/README.md)
+  - [Day03-01：Runtime Architecture Design Principles](day03-runtime-architecture/day03-01-runtime-architecture-design-principles.md)
+  - [Day03-02：Runtime Core Components](day03-runtime-architecture/day03-02-runtime-core-components.md)
+  - [Day03-03：Conversation & Message Data Model](day03-runtime-architecture/day03-03-conversation-message-data-model.md)
+
+## 学习路线
+
+### Part I：Agent Basics
+
+- [Day01：Agent Basics](day01-agent-basics/day01-agent-basics.md)
+
+### Part II：Runtime Foundation
+
+- [Day02：Runtime Overview](day02-runtime/day02-runtime.md)
+- [Day03：Runtime Architecture](day03-runtime-architecture/README.md)
+
+### Part III：Decision Engine
+
+- Day04：Context Builder
+
+### Part IV：Execution Engine
+
+- Day05：Tool Calling
+
+### Part V：Memory System
+
+- Day06：Memory
+
+### Part VI：Advanced Runtime
+
+- Day07：Streaming Event
+- Day08：Human Approval
+- Day09：Workflow
+- Day10：MCP
 
 ## 组织规则
 
@@ -31,7 +64,14 @@ notes/
     ├── README.md
     ├── day03-01-runtime-architecture-design-principles.md
     ├── day03-01-runtime-architecture-design-principles.pdf
-    └── day03-01-runtime-architecture-design-principles.docx
+    ├── day03-01-runtime-architecture-design-principles.docx
+    ├── day03-02-runtime-core-components.md
+    ├── day03-02-runtime-core-components.pdf
+    ├── day03-02-runtime-core-components.docx
+    ├── day03-03-conversation-message-data-model.md
+    ├── day03-03-conversation-message-data-model.pdf
+    ├── day03-03-conversation-message-data-model.docx
+    └── source/
 ```
 
 规则：

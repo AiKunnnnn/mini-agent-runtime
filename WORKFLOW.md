@@ -30,13 +30,31 @@ Codex Workspace Task
 
 学习在 ChatGPT / Codex Chat 中进行。
 
-每天只聚焦一个主题，例如：
+每天只聚焦一个主题，当前学习路线为：
 
-- Day1：Agent 到底是什么
-- Day2：Runtime 谁才是真正的大脑
-- Day3：Runtime Architecture
-- Day4：Runtime Loop
-- Day5：Tool Calling
+```text
+Part I：Agent Basics
+  Day01：Agent Basics
+
+Part II：Runtime Foundation
+  Day02：Runtime Overview
+  Day03：Runtime Architecture
+
+Part III：Decision Engine
+  Day04：Context Builder
+
+Part IV：Execution Engine
+  Day05：Tool Calling
+
+Part V：Memory System
+  Day06：Memory
+
+Part VI：Advanced Runtime
+  Day07：Streaming Event
+  Day08：Human Approval
+  Day09：Workflow
+  Day10：MCP
+```
 
 学习时优先讨论：
 

@@ -16,6 +16,10 @@ Day3 会被拆成多个小节，统一放在当前目录下平铺管理。
   - [Markdown 主版本](day03-02-runtime-core-components.md)
   - [PDF 阅读版](day03-02-runtime-core-components.pdf)
   - [DOCX 可编辑版](day03-02-runtime-core-components.docx)
+- Day03-03：Conversation & Message Data Model
+  - [Markdown 主版本](day03-03-conversation-message-data-model.md)
+  - [PDF 阅读版](day03-03-conversation-message-data-model.pdf)
+  - [DOCX 可编辑版](day03-03-conversation-message-data-model.docx)
 
 ## Day3 拆分计划
 
@@ -28,6 +32,11 @@ Day3 会被拆成多个小节，统一放在当前目录下平铺管理。
 
 - Runtime 为什么应该是 Orchestrator
 - Runtime 第一版核心组件：Runtime、Conversation、Message、ContextBuilder、LLMClient、ToolRegistry
+- Conversation 保存 Runtime 发生过的事实事件，而不只是聊天记录
+- Message 更接近领域事件（Domain Event），Conversation 更接近 Event Log
+- Prompt、Plan 与 Runtime Event 的职责区别
+- Role 表达谁产生消息，Type 表达发生了什么事件
+- Internal Message 不应该直接等于 OpenAI / Claude 等 Provider Message
 - ContextBuilder 为什么更像 Context Compiler，而不是 Prompt Builder
 - Domain Model 与 Domain Service 在 Runtime 组件中的分类
 - Ownership、State Boundary 与 Tell, Don't Ask

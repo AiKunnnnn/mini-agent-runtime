@@ -31,6 +31,8 @@ mini-agent-runtime/
   - [Day03-03：Conversation & Message Data Model](notes/day03-runtime-architecture/day03-03-conversation-message-data-model.md)
 - [Day04：Runtime 如何思考（How Runtime Thinks）](notes/day04-how-runtime-thinks/README.md)
   - [Day04 Part A：Prompt 不是 Context](notes/day04-how-runtime-thinks/day04-part-a-prompt-is-not-context.md)
+  - [Day04 Part B-01：Runtime State](notes/day04-how-runtime-thinks/day04-part-b-01-runtime-state.md)
+  - [Day04 Part B-02：Runtime State Lifecycle](notes/day04-how-runtime-thinks/day04-part-b-02-runtime-state-lifecycle.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 

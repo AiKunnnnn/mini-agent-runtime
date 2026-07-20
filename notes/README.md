@@ -12,6 +12,8 @@
   - [Day03-03：Conversation & Message Data Model](day03-runtime-architecture/day03-03-conversation-message-data-model.md)
 - [Day04：Runtime 如何思考（How Runtime Thinks）](day04-how-runtime-thinks/README.md)
   - [Day04 Part A：Prompt 不是 Context](day04-how-runtime-thinks/day04-part-a-prompt-is-not-context.md)
+  - [Day04 Part B-01：Runtime State](day04-how-runtime-thinks/day04-part-b-01-runtime-state.md)
+  - [Day04 Part B-02：Runtime State Lifecycle](day04-how-runtime-thinks/day04-part-b-02-runtime-state-lifecycle.md)
 
 ## 学习路线
 
@@ -81,6 +83,12 @@ notes/
     ├── day04-part-a-prompt-is-not-context.md
     ├── day04-part-a-prompt-is-not-context.pdf
     ├── day04-part-a-prompt-is-not-context.docx
+    ├── day04-part-b-01-runtime-state.md
+    ├── day04-part-b-01-runtime-state.pdf
+    ├── day04-part-b-01-runtime-state.docx
+    ├── day04-part-b-02-runtime-state-lifecycle.md
+    ├── day04-part-b-02-runtime-state-lifecycle.pdf
+    ├── day04-part-b-02-runtime-state-lifecycle.docx
     └── source/
 ```
 

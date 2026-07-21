@@ -14,6 +14,7 @@
   - [Day04 Part A：Prompt 不是 Context](day04-how-runtime-thinks/day04-part-a-prompt-is-not-context.md)
   - [Day04 Part B-01：Runtime State](day04-how-runtime-thinks/day04-part-b-01-runtime-state.md)
   - [Day04 Part B-02：Runtime State Lifecycle](day04-how-runtime-thinks/day04-part-b-02-runtime-state-lifecycle.md)
+  - [Day04 Part C：Context Builder Projection](day04-how-runtime-thinks/day04-part-c-context-builder-projection.md)
 
 ## 学习路线
 
@@ -89,6 +90,9 @@ notes/
     ├── day04-part-b-02-runtime-state-lifecycle.md
     ├── day04-part-b-02-runtime-state-lifecycle.pdf
     ├── day04-part-b-02-runtime-state-lifecycle.docx
+    ├── day04-part-c-context-builder-projection.md
+    ├── day04-part-c-context-builder-projection.pdf
+    ├── day04-part-c-context-builder-projection.docx
     └── source/
 ```
 

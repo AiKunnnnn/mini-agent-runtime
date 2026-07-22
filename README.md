@@ -34,6 +34,7 @@ mini-agent-runtime/
   - [Day04 Part B-01：Runtime State](notes/day04-how-runtime-thinks/day04-part-b-01-runtime-state.md)
   - [Day04 Part B-02：Runtime State Lifecycle](notes/day04-how-runtime-thinks/day04-part-b-02-runtime-state-lifecycle.md)
   - [Day04 Part C：Context Builder Projection](notes/day04-how-runtime-thinks/day04-part-c-context-builder-projection.md)
+  - [Day04 Part D：Context Window Management](notes/day04-how-runtime-thinks/day04-part-d-context-window-management.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 

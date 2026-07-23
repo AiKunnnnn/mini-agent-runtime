@@ -16,6 +16,7 @@
   - [Day04 Part B-02：Runtime State Lifecycle](day04-how-runtime-thinks/day04-part-b-02-runtime-state-lifecycle.md)
   - [Day04 Part C：Context Builder Projection](day04-how-runtime-thinks/day04-part-c-context-builder-projection.md)
   - [Day04 Part D：Context Window Management](day04-how-runtime-thinks/day04-part-d-context-window-management.md)
+  - [Day04 Part E：Provider Adapter](day04-how-runtime-thinks/day04-part-e-provider-adapter.md)
 
 ## 学习路线
 
@@ -97,6 +98,9 @@ notes/
     ├── day04-part-d-context-window-management.md
     ├── day04-part-d-context-window-management.pdf
     ├── day04-part-d-context-window-management.docx
+    ├── day04-part-e-provider-adapter.md
+    ├── day04-part-e-provider-adapter.pdf
+    ├── day04-part-e-provider-adapter.docx
     └── source/
 ```
 

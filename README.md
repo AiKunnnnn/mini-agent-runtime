@@ -36,8 +36,9 @@ mini-agent-runtime/
   - [Day04 Part C：Context Builder Projection](notes/day04-how-runtime-thinks/day04-part-c-context-builder-projection.md)
   - [Day04 Part D：Context Window Management](notes/day04-how-runtime-thinks/day04-part-d-context-window-management.md)
   - [Day04 Part E：Provider Adapter](notes/day04-how-runtime-thinks/day04-part-e-provider-adapter.md)
-- [Day04.5：Agent Runtime Industrial Mapping（工业术语映射）](notes/day04-5-agent-runtime-industrial-mapping/README.md)
+- [Day04.5：Agent Runtime Industrial Mapping（工业术语映射）](notes/day04.5-agent-runtime-industrial-mapping/README.md)
 - [Day05：Tool Calling（Execution Engine）](notes/day05-tool-calling/README.md)
+  - [Day05 Part A：Tool Calling 基础模型](notes/day05-tool-calling/day05-part-a-tool-calling-basics.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 

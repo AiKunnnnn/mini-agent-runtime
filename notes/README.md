@@ -17,8 +17,9 @@
   - [Day04 Part C：Context Builder Projection](day04-how-runtime-thinks/day04-part-c-context-builder-projection.md)
   - [Day04 Part D：Context Window Management](day04-how-runtime-thinks/day04-part-d-context-window-management.md)
   - [Day04 Part E：Provider Adapter](day04-how-runtime-thinks/day04-part-e-provider-adapter.md)
-- [Day04.5：Agent Runtime Industrial Mapping（工业术语映射）](day04-5-agent-runtime-industrial-mapping/README.md)
+- [Day04.5：Agent Runtime Industrial Mapping（工业术语映射）](day04.5-agent-runtime-industrial-mapping/README.md)
 - [Day05：Tool Calling（Execution Engine）](day05-tool-calling/README.md)
+  - [Day05 Part A：Tool Calling 基础模型](day05-tool-calling/day05-part-a-tool-calling-basics.md)
 
 ## 学习路线
 
@@ -39,6 +40,7 @@
 ### Part IV：Execution Engine
 
 - [Day05：Tool Calling（Execution Engine）](day05-tool-calling/README.md)
+  - [Day05 Part A：Tool Calling 基础模型](day05-tool-calling/day05-part-a-tool-calling-basics.md)
 
 ### Part V：Memory System
 
@@ -105,7 +107,7 @@ notes/
     ├── day04-part-e-provider-adapter.docx
     └── source/
 
-└── day04-5-agent-runtime-industrial-mapping/
+└── day04.5-agent-runtime-industrial-mapping/
     ├── README.md
     ├── day04-5-agent-runtime-industrial-mapping.md
     ├── day04-5-agent-runtime-industrial-mapping.pdf
@@ -113,7 +115,11 @@ notes/
     └── source/
 
 └── day05-tool-calling/
-    └── README.md
+    ├── README.md
+    ├── day05-part-a-tool-calling-basics.md
+    ├── day05-part-a-tool-calling-basics.pdf
+    ├── day05-part-a-tool-calling-basics.docx
+    └── source/
 ```
 
 规则：

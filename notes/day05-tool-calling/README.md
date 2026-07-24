@@ -22,6 +22,14 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
 - `day05-part-h-multi-tool-loop.md`：Multi Tool Loop
 - `day05-part-i-mini-tool-runtime-implementation.md`：Mini Tool Runtime 实现
 
+## 文件
+
+- Day05 Part A：Tool Calling 基础模型
+  - [Markdown 主版本](day05-part-a-tool-calling-basics.md)
+  - [PDF 阅读版](day05-part-a-tool-calling-basics.pdf)
+  - [DOCX 可编辑版](day05-part-a-tool-calling-basics.docx)
+  - [ChatGPT 分享会话源记录](source/day05-part-a-chatgpt-share-source.md)
+
 ## Day05 Part A 目标
 
 Day05 Part A：Tool Calling 基础模型，重点回答：

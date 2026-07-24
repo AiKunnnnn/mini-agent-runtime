@@ -29,6 +29,11 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
   - [PDF 阅读版](day05-part-a-tool-calling-basics.pdf)
   - [DOCX 可编辑版](day05-part-a-tool-calling-basics.docx)
   - [ChatGPT 分享会话源记录](source/day05-part-a-chatgpt-share-source.md)
+- Day05 Part B：LLM 如何决定调用 Tool
+  - [Markdown 主版本](day05-part-b-tool-decision.md)
+  - [PDF 阅读版](day05-part-b-tool-decision.pdf)
+  - [DOCX 可编辑版](day05-part-b-tool-decision.docx)
+  - [ChatGPT 分享会话源记录](source/day05-part-b-chatgpt-share-source.md)
 
 ## Day05 Part A 目标
 
@@ -51,3 +56,24 @@ Day05 Part A：Tool Calling 基础模型，重点回答：
 - Tool Result 在 ReAct 语境下就是 Observation
 - Tool Result 必须回流 Runtime State，再由 Context Builder 进入下一轮 Context
 - Multi Tool Loop 是 Agent 从“会回答”到“会做事”的关键
+
+## Day05 Part B 目标
+
+Day05 Part B：LLM 如何决定调用 Tool，重点回答：
+
+1. Tool Decision 为什么是 Action Selection
+2. Tool Calling 为什么不是 if/else Rule
+3. Goal Understanding 如何连接到 Tool Decision
+4. Tool Schema 如何影响模型决策
+5. auto、required、none 三种 Tool Choice 模式有什么区别
+6. Context、Tool Definition、Runtime Policy 如何共同影响 Tool Decision
+7. 为什么 Tool 存在不代表 Agent 一定会调用
+8. 为什么生产 Agent 需要区分 Decision Layer 与 Execution Layer
+
+## Part B 核心认知
+
+- Tool Decision 不是函数匹配，而是 Goal-driven Action Selection
+- Tool Schema 会改变 LLM 的行动空间
+- LLM 输出的是 Tool Call Intent，Runtime 才控制是否执行
+- 模型能力、Context 质量、Tool Schema 设计都会影响 Tool Decision
+- 工业 Agent 往往采用 LLM Decision + Runtime Policy + Workflow Constraint 的混合控制

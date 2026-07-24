@@ -20,6 +20,7 @@
 - [Day04.5：Agent Runtime Industrial Mapping（工业术语映射）](day04.5-agent-runtime-industrial-mapping/README.md)
 - [Day05：Tool Calling（Execution Engine）](day05-tool-calling/README.md)
   - [Day05 Part A：Tool Calling 基础模型](day05-tool-calling/day05-part-a-tool-calling-basics.md)
+  - [Day05 Part B：LLM 如何决定调用 Tool](day05-tool-calling/day05-part-b-tool-decision.md)
 
 ## 学习路线
 
@@ -41,6 +42,7 @@
 
 - [Day05：Tool Calling（Execution Engine）](day05-tool-calling/README.md)
   - [Day05 Part A：Tool Calling 基础模型](day05-tool-calling/day05-part-a-tool-calling-basics.md)
+  - [Day05 Part B：LLM 如何决定调用 Tool](day05-tool-calling/day05-part-b-tool-decision.md)
 
 ### Part V：Memory System
 
@@ -119,6 +121,9 @@ notes/
     ├── day05-part-a-tool-calling-basics.md
     ├── day05-part-a-tool-calling-basics.pdf
     ├── day05-part-a-tool-calling-basics.docx
+    ├── day05-part-b-tool-decision.md
+    ├── day05-part-b-tool-decision.pdf
+    ├── day05-part-b-tool-decision.docx
     └── source/
 ```
 

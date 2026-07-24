@@ -39,6 +39,7 @@ mini-agent-runtime/
 - [Day04.5：Agent Runtime Industrial Mapping（工业术语映射）](notes/day04.5-agent-runtime-industrial-mapping/README.md)
 - [Day05：Tool Calling（Execution Engine）](notes/day05-tool-calling/README.md)
   - [Day05 Part A：Tool Calling 基础模型](notes/day05-tool-calling/day05-part-a-tool-calling-basics.md)
+  - [Day05 Part B：LLM 如何决定调用 Tool](notes/day05-tool-calling/day05-part-b-tool-decision.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 

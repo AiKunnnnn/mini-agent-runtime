@@ -17,6 +17,8 @@
   - [Day04 Part C：Context Builder Projection](day04-how-runtime-thinks/day04-part-c-context-builder-projection.md)
   - [Day04 Part D：Context Window Management](day04-how-runtime-thinks/day04-part-d-context-window-management.md)
   - [Day04 Part E：Provider Adapter](day04-how-runtime-thinks/day04-part-e-provider-adapter.md)
+- [Day04.5：Agent Runtime Industrial Mapping（工业术语映射）](day04-5-agent-runtime-industrial-mapping/README.md)
+- [Day05：Tool Calling（Execution Engine）](day05-tool-calling/README.md)
 
 ## 学习路线
 
@@ -28,15 +30,15 @@
 
 - [Day02：Runtime Overview](day02-runtime/day02-runtime.md)
 - [Day03：Runtime Architecture](day03-runtime-architecture/README.md)
-- [Day04：Runtime 如何思考（How Runtime Thinks）](day04-how-runtime-thinks/README.md)
 
 ### Part III：Decision Engine
 
-- Day04：Runtime 如何思考（How Runtime Thinks）
+- [Day04：Runtime 如何思考（How Runtime Thinks）](day04-how-runtime-thinks/README.md)
+- [Day04.5：Agent Runtime Industrial Mapping（工业术语映射）](day04.5-agent-runtime-industrial-mapping/README.md)
 
 ### Part IV：Execution Engine
 
-- Day05：Tool Calling
+- [Day05：Tool Calling（Execution Engine）](day05-tool-calling/README.md)
 
 ### Part V：Memory System
 
@@ -102,6 +104,16 @@ notes/
     ├── day04-part-e-provider-adapter.pdf
     ├── day04-part-e-provider-adapter.docx
     └── source/
+
+└── day04-5-agent-runtime-industrial-mapping/
+    ├── README.md
+    ├── day04-5-agent-runtime-industrial-mapping.md
+    ├── day04-5-agent-runtime-industrial-mapping.pdf
+    ├── day04-5-agent-runtime-industrial-mapping.docx
+    └── source/
+
+└── day05-tool-calling/
+    └── README.md
 ```
 
 规则：
@@ -112,3 +124,4 @@ notes/
 - 原始资料放在当天目录的 `source/` 中。
 - 后续图示、流程图、代码草稿可以放进当天目录的 `assets/` 或 `examples/`。
 - 如果某一天被拆成多个小节，统一放在当天目录下平铺管理，例如 `day03-01-xxx.md`、`day03-02-xxx.md`。
+- 如果某一天是插入的桥接章节，可以使用 `day04-5-xxx` 这样的目录名保留学习顺序。

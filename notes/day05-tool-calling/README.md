@@ -34,6 +34,11 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
   - [PDF 阅读版](day05-part-b-tool-decision.pdf)
   - [DOCX 可编辑版](day05-part-b-tool-decision.docx)
   - [ChatGPT 分享会话源记录](source/day05-part-b-chatgpt-share-source.md)
+- Day05 Part C：Tool Schema 设计
+  - [Markdown 主版本](day05-part-c-tool-schema.md)
+  - [PDF 阅读版](day05-part-c-tool-schema.pdf)
+  - [DOCX 可编辑版](day05-part-c-tool-schema.docx)
+  - [ChatGPT 分享会话源记录](source/day05-part-c-chatgpt-share-source.md)
 
 ## Day05 Part A 目标
 
@@ -77,3 +82,24 @@ Day05 Part B：LLM 如何决定调用 Tool，重点回答：
 - LLM 输出的是 Tool Call Intent，Runtime 才控制是否执行
 - 模型能力、Context 质量、Tool Schema 设计都会影响 Tool Decision
 - 工业 Agent 往往采用 LLM Decision + Runtime Policy + Workflow Constraint 的混合控制
+
+## Day05 Part C 目标
+
+Day05 Part C：Tool Schema 设计，重点回答：
+
+1. Tool Schema 为什么是 LLM 与 Runtime 之间的 Action Contract
+2. name、description、parameters 如何影响模型理解与调用质量
+3. 为什么万能 Tool 是坏设计
+4. Tool 粒度如何影响 Action Space
+5. Tool Schema 如何改变 Agent Decision
+6. 工业级 Tool Contract 为什么需要 inputSchema、outputSchema、errorSchema 和 metadata
+7. Tool Result 中的业务枚举如何通过 Semantic Schema 让 LLM 正确理解
+8. mini-agent-runtime 中 Tool 数据模型如何设计
+
+## Part C 核心认知
+
+- Tool Schema 不是普通 API 文档，而是 Agent 的行动空间设计
+- Tool Schema 是一种结构化 Prompt，会影响 Tool Selection 和参数生成
+- 好的 Tool 设计不是给 Agent 最大能力，而是给 Agent 清晰能力
+- 生产级 Tool Contract 需要同时描述输入、输出、错误、权限和 Runtime 控制信息
+- Tool Result 也是 Context，Output Schema 和 Semantic Schema 会影响下一轮 LLM 如何理解世界

@@ -39,6 +39,11 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
   - [PDF 阅读版](day05-part-c-tool-schema.pdf)
   - [DOCX 可编辑版](day05-part-c-tool-schema.docx)
   - [ChatGPT 分享会话源记录](source/day05-part-c-chatgpt-share-source.md)
+- Day05 Part D：Tool Registry
+  - [Markdown 主版本](day05-part-d-tool-registry.md)
+  - [PDF 阅读版](day05-part-d-tool-registry.pdf)
+  - [DOCX 可编辑版](day05-part-d-tool-registry.docx)
+  - [ChatGPT 分享会话源记录](source/day05-part-d-chatgpt-share-source.md)
 
 ## Day05 Part A 目标
 
@@ -103,3 +108,26 @@ Day05 Part C：Tool Schema 设计，重点回答：
 - 好的 Tool 设计不是给 Agent 最大能力，而是给 Agent 清晰能力
 - 生产级 Tool Contract 需要同时描述输入、输出、错误、权限和 Runtime 控制信息
 - Tool Result 也是 Context，Output Schema 和 Semantic Schema 会影响下一轮 LLM 如何理解世界
+
+## Day05 Part D 目标
+
+Day05 Part D：Tool Registry，重点回答：
+
+1. Tool Registry 为什么不是简单的 `Map<String, Tool>`
+2. Runtime 如何管理所有能力，但每轮只向 LLM 暴露当前能力
+3. Tool Definition 与 Tool Implementation 为什么要分离
+4. Tool Metadata 如何承载分类、来源、风险、权限和版本信息
+5. Tool Routing 如何降低 LLM 的 Action Space
+6. Tool Registry 与 Context Builder 如何协同
+7. MCP 暴露的外部能力为什么最终仍要进入 Runtime Registry
+8. 如何区分内置 Tool 与外部 MCP
+9. mini-agent-runtime 中如何实现最小 Tool Registry
+
+## Part D 核心认知
+
+- Tool Registry 不是工具列表，而是 Agent Runtime 的 Capability Management Center
+- Registry 管理所有能力，LLM 每轮只看到当前需要、允许、相关的能力
+- Tool Registry 管理 Agent 的行动空间，Context Builder 管理 Agent 的信息空间
+- Tool Routing 的目标是先缩小候选 Action Space，再交给 LLM 做最终 Tool Decision
+- MCP 不是替代 Tool，而是让外部能力以标准方式进入 Tool Registry
+- Tool Registry 是 Permission、Lifecycle、Evaluation 和 Tool Executor 的前置基础

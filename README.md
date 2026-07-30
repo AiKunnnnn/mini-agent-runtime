@@ -42,6 +42,7 @@ mini-agent-runtime/
   - [Day05 Part B：LLM 如何决定调用 Tool](notes/day05-tool-calling/day05-part-b-tool-decision.md)
   - [Day05 Part C：Tool Schema 设计](notes/day05-tool-calling/day05-part-c-tool-schema.md)
   - [Day05 Part D：Tool Registry](notes/day05-tool-calling/day05-part-d-tool-registry.md)
+  - [Day05 Part E：Tool Executor](notes/day05-tool-calling/day05-part-e-tool-executor.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 

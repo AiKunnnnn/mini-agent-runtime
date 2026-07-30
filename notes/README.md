@@ -23,6 +23,7 @@
   - [Day05 Part B：LLM 如何决定调用 Tool](day05-tool-calling/day05-part-b-tool-decision.md)
   - [Day05 Part C：Tool Schema 设计](day05-tool-calling/day05-part-c-tool-schema.md)
   - [Day05 Part D：Tool Registry](day05-tool-calling/day05-part-d-tool-registry.md)
+  - [Day05 Part E：Tool Executor](day05-tool-calling/day05-part-e-tool-executor.md)
 
 ## 学习路线
 
@@ -47,6 +48,7 @@
   - [Day05 Part B：LLM 如何决定调用 Tool](day05-tool-calling/day05-part-b-tool-decision.md)
   - [Day05 Part C：Tool Schema 设计](day05-tool-calling/day05-part-c-tool-schema.md)
   - [Day05 Part D：Tool Registry](day05-tool-calling/day05-part-d-tool-registry.md)
+  - [Day05 Part E：Tool Executor](day05-tool-calling/day05-part-e-tool-executor.md)
 
 ### Part V：Memory System
 
@@ -134,6 +136,9 @@ notes/
     ├── day05-part-d-tool-registry.md
     ├── day05-part-d-tool-registry.pdf
     ├── day05-part-d-tool-registry.docx
+    ├── day05-part-e-tool-executor.md
+    ├── day05-part-e-tool-executor.pdf
+    ├── day05-part-e-tool-executor.docx
     └── source/
 ```
 

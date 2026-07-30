@@ -44,6 +44,11 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
   - [PDF 阅读版](day05-part-d-tool-registry.pdf)
   - [DOCX 可编辑版](day05-part-d-tool-registry.docx)
   - [ChatGPT 分享会话源记录](source/day05-part-d-chatgpt-share-source.md)
+- Day05 Part E：Tool Executor
+  - [Markdown 主版本](day05-part-e-tool-executor.md)
+  - [PDF 阅读版](day05-part-e-tool-executor.pdf)
+  - [DOCX 可编辑版](day05-part-e-tool-executor.docx)
+  - [ChatGPT 分享会话源记录](source/day05-part-e-chatgpt-share-source.md)
 
 ## Day05 Part A 目标
 
@@ -131,3 +136,29 @@ Day05 Part D：Tool Registry，重点回答：
 - Tool Routing 的目标是先缩小候选 Action Space，再交给 LLM 做最终 Tool Decision
 - MCP 不是替代 Tool，而是让外部能力以标准方式进入 Tool Registry
 - Tool Registry 是 Permission、Lifecycle、Evaluation 和 Tool Executor 的前置基础
+
+## Day05 Part E 目标
+
+Day05 Part E：Tool Executor，重点回答：
+
+1. Tool Executor 为什么不是简单的 `tool.execute()`
+2. 为什么 LLM 只能产生 Tool Call Intent，不能直接执行 Tool
+3. Tool Call Intent 如何通过 `name` 进入 Tool Registry 查找真实实现
+4. Tool Registry、Tool Router、Context Builder、LLM 与 Executor 的职责边界
+5. Tool Execution Context 为什么属于 Runtime 内部契约，而不是 LLM 协议标准
+6. Executor 如何处理参数校验、业务校验、权限检查、超时、重试、取消和幂等
+7. Tool Error 为什么应该转成 Observation 回流 Agent Loop
+8. Tool Result 为什么要先进入 Runtime State，再由 Context Builder 投影给 LLM
+9. Dynamic Tool / MCP / Plugin 如何进入 Runtime 的执行体系
+10. mini-agent-runtime 中如何实现最小 Tool Executor
+
+## Part E 核心认知
+
+- Tool Executor 是 Agent Runtime 的 Execution Kernel，不是普通函数调用器
+- LLM 负责 Decision，Executor 负责 Runtime Managed Execution
+- LLM 输出的 Tool Call Intent 通常已经包含具体 Tool name，Executor 通过 `registry.get(name)` 找到 Tool Implementation
+- ToolExecutionContext 中的 `userId`、`permissions`、`workspace`、`logger` 等字段属于 Runtime 内部契约，不是模型协议标准
+- Executor 是安全边界、可靠性边界和可观测性边界，需要集中处理 Validation、Permission、Retry、Timeout、Cancellation、Idempotency 和 Tracing
+- Tool Error 不是简单 Exception，而是可以回流 LLM 的 Observation
+- Tool Result 不应该总是直接塞给 LLM，而应该先经过 Result Processor 写回 Runtime State
+- 工业 Agent 通常采用核心 Tool 静态内置、扩展 Tool 动态发现的混合能力体系

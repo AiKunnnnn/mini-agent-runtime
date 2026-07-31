@@ -17,7 +17,7 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
 - `day05-part-c-tool-schema.md`：Tool Schema 设计
 - `day05-part-d-tool-registry.md`：Tool Registry
 - `day05-part-e-tool-executor.md`：Tool Executor
-- `day05-part-f-permission-human-approval.md`：Permission & Human Approval
+- `day05-part-f-permission-human-approval.md`：Permission & Human Approval（含 Human-in-the-loop）
 - `day05-part-g-tool-result-runtime-feedback.md`：Tool Result 回流 Runtime
 - `day05-part-h-multi-tool-loop.md`：Multi Tool Loop
 - `day05-part-i-mini-tool-runtime-implementation.md`：Mini Tool Runtime 实现
@@ -49,11 +49,12 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
   - [PDF 阅读版](day05-part-e-tool-executor.pdf)
   - [DOCX 可编辑版](day05-part-e-tool-executor.docx)
   - [ChatGPT 分享会话源记录](source/day05-part-e-chatgpt-share-source.md)
-- Day05 Part F：Permission & Human Approval
+- Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）
   - [Markdown 主版本](day05-part-f-permission-human-approval.md)
   - [PDF 阅读版](day05-part-f-permission-human-approval.pdf)
   - [DOCX 可编辑版](day05-part-f-permission-human-approval.docx)
-  - [ChatGPT 分享会话源记录](source/day05-part-f-chatgpt-share-source.md)
+  - [ChatGPT 分享会话源记录：Part F 前半部分](source/day05-part-f-chatgpt-share-source.md)
+  - [ChatGPT 分享会话源记录：Part F-3](source/day05-part-f-3-chatgpt-share-source.md)
 
 ## Day05 Part A 目标
 
@@ -182,6 +183,10 @@ Day05 Part F：Permission & Human Approval，重点回答：
 8. Agent Permission 与 Business Service Authorization 的职责边界
 9. 为什么业务系统仍然必须保留最终安全校验
 10. Human Approval 为什么是风险管理层，而不是唯一安全兜底
+11. Human Approval 为什么本质是 Runtime Event，而不是 Permission 本身
+12. Approval Request、Approval Scope、Timeout 和 Audit Log 如何建模
+13. Runtime 遇到 `approval_required` 后如何 Suspend / Resume
+14. Human Decision 如何作为 Observation 回流 Runtime State
 
 ## Part F 核心认知
 
@@ -192,3 +197,5 @@ Day05 Part F：Permission & Human Approval，重点回答：
 - Permission Decision 不应只有布尔值，还需要 `approval_required` 来支持 Human-in-the-loop
 - Agent Runtime 负责限制 AI 的能力范围，业务系统负责保护核心资产
 - Agent Security 采用纵深防御：Intent Validation、Policy Engine、Human Approval、Executor Enforcement、Business API Authorization 和 Data Security 各自承担一层责任
+- Human Approval 不是 UI 确认弹窗，而是 Runtime 中的暂停、外部决策、恢复和审计链路
+- Approval 必须绑定精确 Tool Call、参数、资源、Session 和过期时间，Resume 前仍需要重新校验

@@ -24,7 +24,7 @@
   - [Day05 Part C：Tool Schema 设计](day05-tool-calling/day05-part-c-tool-schema.md)
   - [Day05 Part D：Tool Registry](day05-tool-calling/day05-part-d-tool-registry.md)
   - [Day05 Part E：Tool Executor](day05-tool-calling/day05-part-e-tool-executor.md)
-  - [Day05 Part F：Permission & Human Approval](day05-tool-calling/day05-part-f-permission-human-approval.md)
+  - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](day05-tool-calling/day05-part-f-permission-human-approval.md)
 
 ## 学习路线
 
@@ -50,7 +50,7 @@
   - [Day05 Part C：Tool Schema 设计](day05-tool-calling/day05-part-c-tool-schema.md)
   - [Day05 Part D：Tool Registry](day05-tool-calling/day05-part-d-tool-registry.md)
   - [Day05 Part E：Tool Executor](day05-tool-calling/day05-part-e-tool-executor.md)
-  - [Day05 Part F：Permission & Human Approval](day05-tool-calling/day05-part-f-permission-human-approval.md)
+  - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](day05-tool-calling/day05-part-f-permission-human-approval.md)
 
 ### Part V：Memory System
 

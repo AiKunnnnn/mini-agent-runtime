@@ -1,4 +1,4 @@
-# Day05 Part F 学习文档 v1.0：Permission & Human Approval（Agent Governance Layer）
+# Day05 Part F 学习文档 v1.1：Permission & Human Approval（Agent Governance Layer）
 
 > 本文是《从零实现 Agent Runtime》学习阶段的 Day05 Part F 正式学习文档。
 >
@@ -1317,6 +1317,9 @@ Human Approval 不是安全兜底，而是风险管理层。
 Tool Call
   |
   v
+Validation
+  |
+  v
 Policy Check
   |
   v
@@ -1329,33 +1332,772 @@ Human Approval
 Execution
 ```
 
-风险分层：
+Human Approval 的作用不是替代 Permission，也不是替代业务系统的最终校验，而是在高风险动作真正执行前引入人类决策。
 
-| Action 类型 | 策略 |
-|-|-|
-| 查询订单 | 自动执行 |
-| 修改地址 | 自动或条件执行 |
-| 小额退款 | 自动执行 |
-| 大额退款 | 需要人工审批 |
-| 删除客户数据 | 禁止或强审批 |
-| 删除生产数据库 | 拒绝 |
-
-Human Approval 对 Runtime 的影响不是简单停止程序，而是：
+因此它位于：
 
 ```text
-Suspend Runtime
+LLM Decision
   |
   v
-Persist State
+Tool Call Intent
   |
   v
-Wait Human Decision
+Runtime Governance
   |
   v
-Resume Runtime
+Human Decision Gate
+  |
+  v
+Tool Execution
 ```
 
-这会在 Part F-3 继续展开，并连接 Day04 的 Runtime State、Context Persistence 和后续 Long-running Task。
+这也是 Part F-3 的核心：
+
+> Agent 如何在高风险任务中暂停执行，等待人工决策，然后恢复 Runtime？
+
+---
+
+## Day05 Part F-3：Human-in-the-loop
+
+Human-in-the-loop 要解决的不是普通权限问题，而是 Agent 系统中特有的行动确认问题。
+
+传统系统中，用户点击按钮：
+
+```text
+User
+  |
+  v
+Button Click
+  |
+  v
+API
+  |
+  v
+Execute
+```
+
+系统知道动作来自用户明确操作。
+
+Agent 系统中，动作通常来自 LLM 的推理：
+
+```text
+User Goal
+  |
+  v
+LLM Reasoning
+  |
+  v
+Tool Call Intent
+  |
+  v
+Executor
+```
+
+这里的关键差异是：
+
+```text
+User Intent != Agent Action
+```
+
+用户可能只是说：
+
+```text
+帮我处理这个客户问题
+```
+
+但 LLM 可能选择：
+
+```text
+refund_order
+send_email
+update_customer_profile
+delete_customer_data
+```
+
+这些动作并不都等价于用户明确授权。因此 Runtime 需要在高风险 Action 前加入 Human Decision Gate。
+
+---
+
+## Human Approval 在 Runtime 中的位置
+
+Part E 中的 Tool Executor Pipeline 是：
+
+```text
+Tool Call Intent
+  |
+  v
+Tool Lookup
+  |
+  v
+Input Validation
+  |
+  v
+Permission Check
+  |
+  v
+Execution
+```
+
+加入 Human Approval 后变成：
+
+```text
+LLM
+  |
+  v
+Tool Call Intent
+  |
+  v
+Validation
+  |
+  v
+Policy Engine
+  |
+  +-- allow
+  |     |
+  |     v
+  |   Execute
+  |
+  +-- deny
+  |     |
+  |     v
+  |   Stop
+  |
+  +-- approval_required
+        |
+        v
+      Create Approval Request
+        |
+        v
+      Suspend Runtime
+        |
+        v
+      Wait Human Decision
+        |
+        +-- approve -> Resume and Execute
+        |
+        +-- reject  -> Stop and Record Observation
+```
+
+所以 Human Approval 不是 Policy 之前的“人工判断”，而是 Policy 之后的“高风险分支”。
+
+Policy Engine 负责判断：
+
+```text
+这个动作是否需要审批？
+```
+
+Human Approval 负责提供外部事件：
+
+```text
+审批人是否同意这个动作继续执行？
+```
+
+---
+
+## 哪些 Action 需要人工确认
+
+不能让所有 Tool 都进入审批，否则 Agent 会失去自动化价值。
+
+一个实用的风险分层：
+
+| Risk Level | Action 类型 | Runtime 策略 |
+|-|-|-|
+| Level 0 | 只读查询 | 自动执行 |
+| Level 1 | 低风险写入 | 自动执行或条件执行 |
+| Level 2 | 业务影响动作 | 按金额、范围、上下文判断 |
+| Level 3 | 高风险动作 | 需要人工审批 |
+| Level 4 | 禁止动作 | 直接拒绝 |
+
+例子：
+
+| Action | 策略 |
+|-|-|
+| `query_order` | `allow` |
+| `update_shipping_address` | 低风险时 `allow`，异常时 `approval_required` |
+| `refund_order(amount <= 500)` | `allow` |
+| `refund_order(amount > 5000)` | `approval_required` |
+| `delete_customer_data` | `approval_required` 或 `deny` |
+| `delete_production_database` | `deny` |
+
+核心原则：
+
+```text
+Read can be automatic.
+Write needs policy.
+High-impact write needs approval.
+Destructive action may be denied outright.
+```
+
+---
+
+## Human Approval 本质是 Runtime Event
+
+一个容易混淆的点是：Human Approval 不是 Permission 的子模块。
+
+更准确地说：
+
+```text
+Permission:
+  系统根据策略自动计算结果
+
+Human Approval:
+  外部人类决策事件
+```
+
+Permission 可以输出：
+
+```text
+approval_required
+```
+
+但真正的 approve / reject 来自 Runtime 外部：
+
+```text
+Manager clicks Approve
+Manager clicks Reject
+Timeout expires
+User cancels task
+```
+
+因此 Human Approval 在 Runtime 里应该被建模成事件：
+
+```text
+WAITING_HUMAN_APPROVAL
+HUMAN_APPROVED
+HUMAN_REJECTED
+APPROVAL_TIMEOUT
+```
+
+这条链路是：
+
+```text
+Tool Call Intent
+  |
+  v
+Policy Decision: approval_required
+  |
+  v
+Runtime Event: WAITING_HUMAN_APPROVAL
+  |
+  v
+External Event: Human Approved / Rejected
+  |
+  v
+Continue or Stop
+```
+
+这也是 Human Approval 与普通权限判断最大的区别：它不是一次同步函数调用，而是一次跨时间的 Runtime 状态转换。
+
+---
+
+## Approval Request 如何建模
+
+当 Policy 返回 `approval_required` 时，Runtime 不能只返回一个字符串。
+
+它需要创建 Approval Request：
+
+```ts
+type ApprovalRequest = {
+  id: string;
+  sessionId: string;
+  userId: string;
+  agentId: string;
+  toolCall: ToolCallIntent;
+  riskLevel: "write" | "financial" | "destructive";
+  reason: string;
+  status: "pending" | "approved" | "rejected" | "expired";
+  createdAt: string;
+  expiresAt?: string;
+  decidedAt?: string;
+  decidedBy?: string;
+};
+```
+
+这个对象至少要回答：
+
+1. 哪个 Agent 发起了动作
+2. 哪个用户上下文下发起
+3. 要调用哪个 Tool
+4. 参数是什么
+5. 为什么需要审批
+6. 谁可以审批
+7. 审批是否过期
+8. 审批结果是什么
+
+审批请求不是 UI 文案，而是 Runtime 中可审计、可恢复、可追踪的业务对象。
+
+---
+
+## Approval Scope
+
+审批必须绑定精确范围，不能做成模糊授权。
+
+不推荐：
+
+```text
+Approve refund_order
+```
+
+因为这可能被理解成“以后所有退款都可以执行”。
+
+更合理：
+
+```text
+Approve this exact tool call:
+
+tool: refund_order
+orderId: ORD-001
+amount: 10000
+currency: CNY
+sessionId: S-123
+approvalId: A-456
+```
+
+也就是说，Approval Scope 应该绑定：
+
+```text
+Tool Name
++ Arguments Hash
++ User
++ Agent Session
++ Resource
++ Expiration
+```
+
+如果参数变了，审批应该失效：
+
+```text
+Approved:
+  refund_order amount = 1000
+
+Later Tool Call:
+  refund_order amount = 10000
+
+Result:
+  approval_invalid
+```
+
+否则 Agent 或攻击者可能把一次低风险审批复用到高风险动作上。
+
+---
+
+## Suspend / Resume
+
+当 Runtime 遇到 `approval_required`，它不应该继续执行 Tool。
+
+正确行为是：
+
+```text
+1. 创建 ApprovalRequest
+2. 将当前 Tool Call 标记为 pending
+3. 暂停 Agent Loop
+4. 把状态保存到 Runtime State
+5. 等待外部 Human Decision
+```
+
+最小状态可以是：
+
+```ts
+type RuntimeStatus =
+  | "running"
+  | "waiting_human_approval"
+  | "completed"
+  | "failed";
+
+type PendingApprovalState = {
+  status: "waiting_human_approval";
+  approvalId: string;
+  pendingToolCall: ToolCallIntent;
+  reason: string;
+};
+```
+
+恢复时：
+
+```text
+Human Decision
+  |
+  v
+Load Pending Runtime State
+  |
+  v
+Validate Approval Scope
+  |
+  v
+Re-check Policy
+  |
+  v
+Execute or Stop
+```
+
+注意：Resume 不等于无条件继续执行。
+
+审批通过后，Runtime 仍应检查：
+
+1. 审批是否匹配当前 Tool Call
+2. 审批是否过期
+3. 用户、资源、参数是否仍然一致
+4. 当前业务状态是否已经变化
+5. Policy 是否仍然允许执行
+
+因为审批和恢复之间可能经过很长时间，世界状态可能已经变了。
+
+---
+
+## Human Decision 如何变成 Observation
+
+Human Decision 不只是控制流事件，也应该写回 Runtime State，并成为 Agent 后续推理可以看到的 Observation。
+
+审批通过：
+
+```json
+{
+  "type": "human_approval",
+  "approvalId": "A-456",
+  "decision": "approved",
+  "decidedBy": "manager_001"
+}
+```
+
+审批拒绝：
+
+```json
+{
+  "type": "human_approval",
+  "approvalId": "A-456",
+  "decision": "rejected",
+  "reason": "refund amount is too high"
+}
+```
+
+进入 Agent Loop 后：
+
+```text
+Human rejected the refund request.
+Agent should explain to the user or choose a safer alternative.
+```
+
+这会连接下一节 Part G：
+
+> Tool Result、Human Decision、Error 都会以 Observation 的形式回流 Runtime State，再由 Context Builder 投影给 LLM。
+
+---
+
+## Approval Timeout 与 Cancellation
+
+Human Approval 必须考虑超时。
+
+不能让 Agent 无限等待：
+
+```text
+waiting_human_approval forever
+```
+
+常见策略：
+
+| 情况 | Runtime 行为 |
+|-|-|
+| 审批通过 | Resume and Execute |
+| 审批拒绝 | Stop and Record Observation |
+| 审批超时 | Mark expired and Stop |
+| 用户取消 | Mark cancelled and Stop |
+| 业务状态变化 | Re-check and possibly deny |
+
+Timeout 不是小细节，它决定 Runtime 是否能可靠处理长时间任务。
+
+最小模型：
+
+```ts
+type ApprovalDecision =
+  | {
+      type: "approved";
+      approvalId: string;
+      decidedBy: string;
+      decidedAt: string;
+    }
+  | {
+      type: "rejected";
+      approvalId: string;
+      decidedBy: string;
+      reason?: string;
+      decidedAt: string;
+    }
+  | {
+      type: "expired";
+      approvalId: string;
+      expiredAt: string;
+    };
+```
+
+---
+
+## Audit Log
+
+Human Approval 必须可审计。
+
+至少记录：
+
+```text
+who requested
+which agent requested
+which tool was requested
+what arguments were proposed
+why approval was required
+who approved or rejected
+when the decision happened
+whether execution actually happened
+what the result was
+```
+
+审计链路：
+
+```text
+Tool Call Intent
+  |
+  v
+Policy Decision
+  |
+  v
+Approval Request
+  |
+  v
+Human Decision
+  |
+  v
+Tool Execution
+  |
+  v
+Tool Result
+```
+
+工业系统中，如果没有 Audit Log，Human Approval 很容易变成不可追责的 UI 弹窗。
+
+---
+
+## Human Approval 与 Durable Workflow 的边界
+
+Part F-3 只需要讲清 Human Approval 如何影响 Tool Execution Lifecycle。
+
+不需要在这里深入：
+
+```text
+Durable Execution
+Workflow State Machine
+Event Sourcing
+Temporal
+LangGraph Persistence
+```
+
+这些属于后续 Runtime State Persistence / Workflow Engine。
+
+在 Day05 的范围内，正确定位是：
+
+```text
+Human Approval
+=
+Permission Decision 的一种执行分支
++
+Tool Execution Lifecycle 的暂停/恢复机制
+```
+
+也就是说，本节只需要把下面这条线讲透：
+
+```text
+approval_required
+  |
+  v
+pending_approval
+  |
+  v
+human_decision
+  |
+  v
+execute or stop
+```
+
+---
+
+## MCP 与 Governance 的关系
+
+MCP Server 暴露的外部工具进入 Runtime 后，仍然必须走同一套治理链路。
+
+错误理解：
+
+```text
+MCP Tool 已经声明 read-only
+所以 Runtime 可以直接信任
+```
+
+正确理解：
+
+```text
+External Tool
+  |
+  v
+Tool Registry
+  |
+  v
+Tool Metadata
+  |
+  v
+Policy Engine
+  |
+  v
+Executor Enforcement
+```
+
+原因是：
+
+1. 外部 Tool 的声明可能不完整
+2. Tool 的真实副作用可能超过描述
+3. Tool 参数可能让低风险能力变成高风险动作
+4. 不同用户、租户、环境下策略不同
+5. Runtime 必须保留统一审计和审批能力
+
+所以：
+
+```text
+MCP expands capability.
+Runtime Governance controls capability.
+```
+
+---
+
+## mini-agent-runtime 中的最小 HumanApprovalService
+
+Part F 的最小实现可以分成两个服务。
+
+PermissionService 负责策略判断：
+
+```ts
+interface PermissionService {
+  check(
+    tool: RuntimeTool,
+    call: ToolCallIntent,
+    context: ToolExecutionContext
+  ): Promise<PermissionDecision>;
+}
+```
+
+HumanApprovalService 负责审批请求和人工决策：
+
+```ts
+interface HumanApprovalService {
+  createRequest(input: {
+    sessionId: string;
+    userId: string;
+    agentId: string;
+    toolCall: ToolCallIntent;
+    reason: string;
+    riskLevel: string;
+  }): Promise<ApprovalRequest>;
+
+  resolve(
+    approvalId: string,
+    decision: ApprovalDecision
+  ): Promise<void>;
+}
+```
+
+Permission Decision：
+
+```ts
+type PermissionDecision =
+  | {
+      type: "allow";
+    }
+  | {
+      type: "deny";
+      reason: string;
+    }
+  | {
+      type: "approval_required";
+      reason: string;
+      riskLevel: string;
+    };
+```
+
+Executor 集成：
+
+```ts
+async function executeToolCall(
+  toolCall: ToolCallIntent,
+  context: ToolExecutionContext
+) {
+  const tool = registry.get(toolCall.name);
+
+  if (!tool) {
+    return {
+      type: "error",
+      error: "tool_not_found"
+    };
+  }
+
+  const validation = validateInput(tool.definition.parameters, toolCall.arguments);
+
+  if (!validation.ok) {
+    return {
+      type: "error",
+      error: "invalid_arguments",
+      details: validation.errors
+    };
+  }
+
+  const decision = await permissionService.check(tool, toolCall, context);
+
+  switch (decision.type) {
+    case "allow":
+      return tool.execute(toolCall.arguments, context);
+
+    case "deny":
+      return {
+        type: "error",
+        error: "permission_denied",
+        reason: decision.reason
+      };
+
+    case "approval_required": {
+      const request = await humanApprovalService.createRequest({
+        sessionId: context.sessionId,
+        userId: context.userId,
+        agentId: context.agentId,
+        toolCall,
+        reason: decision.reason,
+        riskLevel: decision.riskLevel
+      });
+
+      return {
+        type: "pending_approval",
+        approvalId: request.id,
+        reason: request.reason
+      };
+    }
+  }
+}
+```
+
+这里的关键不是代码复杂度，而是职责边界：
+
+```text
+Tool Registry:
+  找能力
+
+Validator:
+  校验参数
+
+PermissionService:
+  做策略判断
+
+HumanApprovalService:
+  管理审批请求和人类决策
+
+Executor:
+  强制执行策略结果
+
+Business API:
+  做最终业务校验
+```
 
 ---
 
@@ -1476,6 +2218,12 @@ Business API:
 | Risk Level | Action Risk Classification |
 | Action Permission | Capability Authorization |
 | Human Approval | Human-in-the-loop |
+| Approval Request | Approval Task / Approval Workflow Item |
+| Approval Scope | Approval Binding / Scoped Authorization |
+| Pending Approval | Suspended Tool Execution |
+| Human Decision | External Runtime Event |
+| Approval Timeout | Expiration Policy |
+| Audit Log | Governance Audit Trail |
 | Suspend / Resume | Durable Execution / Workflow Suspension |
 | Business Service Validation | Business Boundary Enforcement |
 | Defense in Depth | Layered Security Model |
@@ -1526,41 +2274,86 @@ Business API:
 
 ---
 
+### Q6：Human Approval 为什么不是 Permission？
+
+回答：
+
+> Permission 是 Runtime 根据策略自动计算出的决策结果，Human Approval 是来自外部审批人的 Runtime Event。Policy 可以返回 `approval_required`，但 approve / reject 必须由外部人类决策触发，并通过 Runtime State 影响后续 Tool Execution。
+
+---
+
+### Q7：审批通过后为什么还要重新校验？
+
+回答：
+
+> 因为审批和恢复之间可能存在时间间隔，Tool 参数、资源状态、用户权限、业务状态或策略都可能变化。Resume 前需要校验 Approval Scope、过期时间、参数一致性和当前业务状态，避免一次审批被复用或在过期上下文中继续执行。
+
+---
+
 ## 下一节学习计划
 
-下一节继续 Day05 Part F-3：Human-in-the-loop（人工审批机制）。
+下一节进入 Day05 Part G：Tool Result Runtime Feedback。
 
 核心问题：
 
-> Agent 如何在高风险任务中暂停执行，等待人工决策，然后恢复 Runtime？
+> Tool 执行完成以后，结果如何重新进入 Runtime，让 Agent 继续推理？
 
-重点：
+前面 Day05 Part A-F 已经完成：
 
-1. 哪些 Action 必须人工确认
-2. Risk Level 如何划分
-3. Approval Request 如何建模
-4. Runtime 如何 Suspend
-5. Approval 后如何 Resume
-6. Runtime State 如何保存 pending tool call
-7. Human Decision 如何变成 Observation
-8. Claude Code / 企业 Agent 中的真实映射
+```text
+Tool Calling Basics
+Tool Decision
+Tool Schema
+Tool Registry
+Tool Executor
+Permission & Human Approval
+```
+
+Part G 要补上闭环：
+
+```text
+Tool Result
+  |
+  v
+Observation
+  |
+  v
+Runtime State
+  |
+  v
+Context Builder
+  |
+  v
+Next LLM Turn
+```
+
+重点问题：
+
+1. Tool Result 为什么不能直接等于最终回答
+2. Observation 与 Tool Result 的关系
+3. Result Processor 的职责
+4. Tool Error 如何回流 Agent Loop
+5. Human Decision 如何作为 Observation 回流
+6. Runtime State 如何保存执行结果
+7. Context Builder 如何投影 Tool Result
+8. mini-agent-runtime 如何实现最小 Result Feedback
 
 关键链路：
 
 ```text
-Tool Call
+Tool Execution
   |
   v
-Risk Check
+Tool Result
   |
   v
-Pause
+Observation
   |
   v
-Human Decision
+Runtime State
   |
   v
-Resume
+Next Reasoning
 ```
 
 ---
@@ -1664,6 +2457,40 @@ Existing Software System
 + LLM Decision Layer
 + Runtime Governance
 ```
+
+---
+
+### TODO 6：补充 Human Approval 不是 Permission，而是 Runtime Event
+
+需要把以下对比写进书中：
+
+```text
+Permission:
+  Runtime computes a policy decision.
+
+Human Approval:
+  External human event resumes or stops execution.
+```
+
+这一点能解释为什么审批机制天然连接 Runtime State、Suspend / Resume、Audit Log 和 Long-running Task。
+
+---
+
+### TODO 7：补充 Approval Scope
+
+审批不能只是：
+
+```text
+Approve refund_order
+```
+
+而应该是：
+
+```text
+Approve this exact tool call under this session and arguments.
+```
+
+这可以作为 Agent 安全章节中的一个重要案例。
 
 ---
 
@@ -1772,6 +2599,35 @@ Data Layer 防止：
 
 ---
 
+### 素材 5：Approval 是一次暂停，不是一次弹窗
+
+Demo Agent 中的审批常被做成：
+
+```text
+confirm("是否执行？")
+```
+
+工业 Agent 中的审批应该是：
+
+```text
+Create Approval Request
+  |
+  v
+Persist Pending Runtime State
+  |
+  v
+Wait External Human Event
+  |
+  v
+Validate and Resume
+```
+
+核心观点：
+
+> Human Approval 的本质是 Runtime 状态机中的暂停和恢复，而不是 UI 层的确认按钮。
+
+---
+
 ## 本 Part 核心认知升级
 
 本节最重要的升级是：
@@ -1801,6 +2657,21 @@ Runtime = Deterministic Control Layer
 Business System = Final Trusted Boundary
 ```
 
+Part F-3 进一步把认知推进到：
+
+```text
+Human Approval
+!=
+Manual Permission Check
+
+Human Approval
+=
+External Runtime Event
++ Scoped Decision
++ Suspend / Resume
++ Audit Trail
+```
+
 ---
 
 ## 工业级实现
@@ -1816,6 +2687,9 @@ Business System = Final Trusted Boundary
 7. Business API 保留最终 Authentication、Authorization 和 Business Validation
 8. 对每次 Tool Call 记录 Audit Log
 9. 对外部 MCP / Plugin Tool 做来源验证、权限隔离和沙箱控制
+10. Approval Request 绑定精确 Tool Call、参数、资源、Session 和过期时间
+11. Resume 前重新校验 Approval Scope、Policy 和业务状态
+12. Human Decision 作为 Observation 回流 Runtime State
 
 ---
 
@@ -1847,7 +2721,14 @@ Part F: Permission & Human Approval
   +-- Tool Metadata Boundary
   +-- Intent Validation
   +-- Business Security Boundary
-  +-- Human Approval Preview
+  +-- Human-in-the-loop
+      |
+      +-- Approval Request
+      +-- Approval Scope
+      +-- Suspend / Resume
+      +-- Timeout / Cancellation
+      +-- Audit Log
+      +-- Human Decision Observation
 ```
 
 Part F 与后续章节的连接：
@@ -1859,13 +2740,16 @@ Human Approval
 Runtime Suspend / Resume
   |
   v
-Runtime State Persistence
+Observation
   |
   v
-Long-running Task
+Runtime State
   |
   v
-Streaming Event
+Tool Result Runtime Feedback
+  |
+  v
+Multi Tool Loop
 ```
 
 ---
@@ -1877,6 +2761,9 @@ Streaming Event
 3. 如果一个 MCP Server 声称自己的 Tool 是 `read-only`，为什么 Runtime 不能完全相信？
 4. Human Approval 应该放在 Policy 之前还是 Policy 之后？为什么？
 5. 为什么说 LLM 输出的 Tool Call Intent 只是 Action Proposal，而不是可信执行指令？
+6. 为什么 Human Approval 本质上是 Runtime Event，而不是 Permission Decision？
+7. 审批通过后，为什么 Runtime 仍然需要重新校验 Tool Call？
+8. Approval Scope 如果只绑定 Tool Name，而不绑定参数和 Session，会有什么风险？
 
 ---
 
@@ -1908,13 +2795,26 @@ Human Approval 是高风险动作的风险管理机制，用于在执行前引�
 
 ### Q5：Part F 今天是否已经讲完？
 
-本次内容完成了 Part F 的前半部分：
+本次内容已经完成 Day05 Part F：
 
 ```text
 Permission
 Policy Engine
 Agent Security Boundary
 Business Security Boundary
+Human-in-the-loop
+Approval Request
+Suspend / Resume
+Audit Log
 ```
 
-剩余 Human-in-the-loop 的 Suspend / Resume 机制会在 Part F-3 继续展开。
+下一节进入 Day05 Part G：Tool Result Runtime Feedback。
+
+---
+
+## 资料来源
+
+- ChatGPT 分享学习记录（Part F 前半部分）：https://chatgpt.com/share/6a6c56fa-d734-83ee-a4e9-bda185e34c72
+- ChatGPT 分享学习记录（Part F-3）：https://chatgpt.com/share/6a6c6731-d744-83ee-9f11-a760aa23dcd8
+- 本地源记录（Part F 前半部分）：`source/day05-part-f-chatgpt-share-source.md`
+- 本地源记录（Part F-3）：`source/day05-part-f-3-chatgpt-share-source.md`

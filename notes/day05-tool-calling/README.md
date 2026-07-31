@@ -49,6 +49,11 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
   - [PDF 阅读版](day05-part-e-tool-executor.pdf)
   - [DOCX 可编辑版](day05-part-e-tool-executor.docx)
   - [ChatGPT 分享会话源记录](source/day05-part-e-chatgpt-share-source.md)
+- Day05 Part F：Permission & Human Approval
+  - [Markdown 主版本](day05-part-f-permission-human-approval.md)
+  - [PDF 阅读版](day05-part-f-permission-human-approval.pdf)
+  - [DOCX 可编辑版](day05-part-f-permission-human-approval.docx)
+  - [ChatGPT 分享会话源记录](source/day05-part-f-chatgpt-share-source.md)
 
 ## Day05 Part A 目标
 
@@ -162,3 +167,28 @@ Day05 Part E：Tool Executor，重点回答：
 - Tool Error 不是简单 Exception，而是可以回流 LLM 的 Observation
 - Tool Result 不应该总是直接塞给 LLM，而应该先经过 Result Processor 写回 Runtime State
 - 工业 Agent 通常采用核心 Tool 静态内置、扩展 Tool 动态发现的混合能力体系
+
+## Day05 Part F 目标
+
+Day05 Part F：Permission & Human Approval，重点回答：
+
+1. 为什么 Agent 需要独立于传统 API 权限之外的 Action Permission
+2. Agent Permission 与传统 RBAC / ABAC 的区别
+3. Tool Metadata 为什么只是策略输入，而不是安全边界
+4. Permission Check 应该放在 Tool Executor Pipeline 的哪个位置
+5. Policy Engine、PDP、PEP 在 Agent Runtime 中如何分工
+6. 为什么 Permission Decision 需要 `allow` / `deny` / `approval_required` 三态
+7. 如何理解伪造 Tool Call Intent、Prompt Injection 与 Runtime Governance 的关系
+8. Agent Permission 与 Business Service Authorization 的职责边界
+9. 为什么业务系统仍然必须保留最终安全校验
+10. Human Approval 为什么是风险管理层，而不是唯一安全兜底
+
+## Part F 核心认知
+
+- Agent Permission 不是限制用户访问 API，而是在限制 Agent 代表用户采取行动
+- LLM 输出的 Tool Call Intent 应被视为不可信 Action Proposal，而不是可信执行指令
+- Tool Metadata 是 Capability Description 和 Policy Input，不是 Enforcement Boundary
+- Runtime Governance Layer 需要在 Decision Layer 和 Execution Layer 之间进行 Validation、Policy、Approval 和 Audit
+- Permission Decision 不应只有布尔值，还需要 `approval_required` 来支持 Human-in-the-loop
+- Agent Runtime 负责限制 AI 的能力范围，业务系统负责保护核心资产
+- Agent Security 采用纵深防御：Intent Validation、Policy Engine、Human Approval、Executor Enforcement、Business API Authorization 和 Data Security 各自承担一层责任

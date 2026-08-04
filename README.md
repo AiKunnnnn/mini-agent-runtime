@@ -44,6 +44,7 @@ mini-agent-runtime/
   - [Day05 Part D：Tool Registry](notes/day05-tool-calling/day05-part-d-tool-registry.md)
   - [Day05 Part E：Tool Executor](notes/day05-tool-calling/day05-part-e-tool-executor.md)
   - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](notes/day05-tool-calling/day05-part-f-permission-human-approval.md)
+  - [Day05 Part G：Tool Result 回流 Runtime](notes/day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 

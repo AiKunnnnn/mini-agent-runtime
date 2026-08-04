@@ -25,6 +25,7 @@
   - [Day05 Part D：Tool Registry](day05-tool-calling/day05-part-d-tool-registry.md)
   - [Day05 Part E：Tool Executor](day05-tool-calling/day05-part-e-tool-executor.md)
   - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](day05-tool-calling/day05-part-f-permission-human-approval.md)
+  - [Day05 Part G：Tool Result 回流 Runtime](day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
 
 ## 学习路线
 
@@ -51,6 +52,7 @@
   - [Day05 Part D：Tool Registry](day05-tool-calling/day05-part-d-tool-registry.md)
   - [Day05 Part E：Tool Executor](day05-tool-calling/day05-part-e-tool-executor.md)
   - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](day05-tool-calling/day05-part-f-permission-human-approval.md)
+  - [Day05 Part G：Tool Result 回流 Runtime](day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
 
 ### Part V：Memory System
 
@@ -144,6 +146,9 @@ notes/
     ├── day05-part-f-permission-human-approval.md
     ├── day05-part-f-permission-human-approval.pdf
     ├── day05-part-f-permission-human-approval.docx
+    ├── day05-part-g-tool-result-runtime-feedback.md
+    ├── day05-part-g-tool-result-runtime-feedback.pdf
+    ├── day05-part-g-tool-result-runtime-feedback.docx
     └── source/
 ```
 

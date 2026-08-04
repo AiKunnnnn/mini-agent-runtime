@@ -55,6 +55,11 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
   - [DOCX 可编辑版](day05-part-f-permission-human-approval.docx)
   - [ChatGPT 分享会话源记录：Part F 前半部分](source/day05-part-f-chatgpt-share-source.md)
   - [ChatGPT 分享会话源记录：Part F-3](source/day05-part-f-3-chatgpt-share-source.md)
+- Day05 Part G：Tool Result 回流 Runtime
+  - [Markdown 主版本](day05-part-g-tool-result-runtime-feedback.md)
+  - [PDF 阅读版](day05-part-g-tool-result-runtime-feedback.pdf)
+  - [DOCX 可编辑版](day05-part-g-tool-result-runtime-feedback.docx)
+  - [ChatGPT 分享会话源记录](source/day05-part-g-chatgpt-share-source.md)
 
 ## Day05 Part A 目标
 
@@ -199,3 +204,35 @@ Day05 Part F：Permission & Human Approval，重点回答：
 - Agent Security 采用纵深防御：Intent Validation、Policy Engine、Human Approval、Executor Enforcement、Business API Authorization 和 Data Security 各自承担一层责任
 - Human Approval 不是 UI 确认弹窗，而是 Runtime 中的暂停、外部决策、恢复和审计链路
 - Approval 必须绑定精确 Tool Call、参数、资源、Session 和过期时间，Resume 前仍需要重新校验
+
+## Day05 Part G 目标
+
+Day05 Part G：Tool Result 回流 Runtime，重点回答：
+
+1. 为什么 Tool Result 不等于 Agent 的 Final Answer
+2. Agent 为什么需要 Think / Act / Observe 的 Feedback Loop
+3. Observation 为什么是 Runtime 对外部反馈的统一抽象
+4. Observation 与 Message、Tool Result、Memory 的边界分别是什么
+5. Tool Result 为什么要先经过 Result Processor，再写入 Runtime State
+6. Tool Error 为什么也应该作为 Observation 回流 Agent Loop
+7. Runtime State 如何通过 Event / Reducer / State Transition 接收 Observation
+8. Context Builder 如何对 Observation 做选择、优先级排序、压缩和淘汰
+9. Recovery Strategy 如何结合 Runtime Policy 与 LLM Reasoning
+10. Human Approval 决策如何作为 Observation 支持 Suspend / Resume
+11. 为什么 Observation 不是简单的数据清洗层，而是 Runtime 与业务世界之间的隔离层
+12. Runtime Event Type 与 Domain Event Type 为什么要分离
+13. MCP Tool Result 为什么最终也应该进入统一 Observation
+14. mini-agent-runtime 中如何实现最小 Observation Feedback Loop
+
+## Part G 核心认知
+
+- Tool Result 是外部世界反馈，不是 Agent 的最终用户回答
+- Agent 的关键不是只会调用 Tool，而是能根据 Tool 结果继续思考和行动
+- Observation 是 Runtime 可理解、可存储、可审计、可恢复、可选择、可投影的反馈事件
+- Tool Result 应先经过 Result Processor 转成 Observation，再进入 Runtime State
+- Runtime State 不等于 LLM Context，Observation 需要由 Context Builder 选择、压缩和投影
+- Error 不是简单异常终止，而是 Agent 可利用的反馈输入
+- Recovery 应由 Runtime Policy 提供边界，由 LLM Reasoning 选择符合目标的下一步
+- Observation Store 不等于 Memory；Memory 可以从 Observation 中抽取长期有价值的信息
+- Observation type 应保持 Runtime 通用语义，业务事件语义应留在 payload / source / metadata 中
+- MCP、HTTP、本地函数或 Plugin Tool 的结果最终都应该汇入统一 Observation 层

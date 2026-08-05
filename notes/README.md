@@ -26,6 +26,7 @@
   - [Day05 Part E：Tool Executor](day05-tool-calling/day05-part-e-tool-executor.md)
   - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](day05-tool-calling/day05-part-f-permission-human-approval.md)
   - [Day05 Part G：Tool Result 回流 Runtime](day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
+  - [Day05 Part H：Multi Tool Loop](day05-tool-calling/day05-part-h-multi-tool-loop.md)
 
 ## 学习路线
 
@@ -53,6 +54,7 @@
   - [Day05 Part E：Tool Executor](day05-tool-calling/day05-part-e-tool-executor.md)
   - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](day05-tool-calling/day05-part-f-permission-human-approval.md)
   - [Day05 Part G：Tool Result 回流 Runtime](day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
+  - [Day05 Part H：Multi Tool Loop](day05-tool-calling/day05-part-h-multi-tool-loop.md)
 
 ### Part V：Memory System
 
@@ -64,6 +66,12 @@
 - Day08：Human Approval
 - Day09：Workflow
 - Day10：MCP
+
+### 附加章节：AI Assistant + Workflow Practice
+
+- 实践 AI Assistant + Workflow
+- 区分 AI Assistant、Agentic Workflow 与 Autonomous Agent
+- 验证“流程固化场景更适合 AI Assistant + Workflow，开放任务才更适合 Multi Tool Loop”的架构边界
 
 ## 组织规则
 
@@ -149,6 +157,9 @@ notes/
     ├── day05-part-g-tool-result-runtime-feedback.md
     ├── day05-part-g-tool-result-runtime-feedback.pdf
     ├── day05-part-g-tool-result-runtime-feedback.docx
+    ├── day05-part-h-multi-tool-loop.md
+    ├── day05-part-h-multi-tool-loop.pdf
+    ├── day05-part-h-multi-tool-loop.docx
     └── source/
 ```
 

@@ -60,6 +60,11 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
   - [PDF 阅读版](day05-part-g-tool-result-runtime-feedback.pdf)
   - [DOCX 可编辑版](day05-part-g-tool-result-runtime-feedback.docx)
   - [ChatGPT 分享会话源记录](source/day05-part-g-chatgpt-share-source.md)
+- Day05 Part H：Multi Tool Loop
+  - [Markdown 主版本](day05-part-h-multi-tool-loop.md)
+  - [PDF 阅读版](day05-part-h-multi-tool-loop.pdf)
+  - [DOCX 可编辑版](day05-part-h-multi-tool-loop.docx)
+  - [ChatGPT 分享会话源记录](source/day05-part-h-chatgpt-share-source.md)
 
 ## Day05 Part A 目标
 
@@ -236,3 +241,32 @@ Day05 Part G：Tool Result 回流 Runtime，重点回答：
 - Observation Store 不等于 Memory；Memory 可以从 Observation 中抽取长期有价值的信息
 - Observation type 应保持 Runtime 通用语义，业务事件语义应留在 payload / source / metadata 中
 - MCP、HTTP、本地函数或 Plugin Tool 的结果最终都应该汇入统一 Observation 层
+
+## Day05 Part H 目标
+
+Day05 Part H：Multi Tool Loop，重点回答：
+
+1. 为什么 Agent Loop 不等于一次 Tool Call
+2. Tool Calling + Loop 为什么才让系统接近真正 Agent
+3. Tool Call Chain 如何记录多步执行轨迹
+4. ToolCall 与 Observation 为什么必须分离
+5. Agent Loop 为什么越来越像 Event-driven State Machine
+6. Stop Condition、Loop Control 和 Loop Guard 如何防止无限循环
+7. Agent Executor Loop 与 Tool Executor 的职责边界是什么
+8. Sequential Tool Execution 与 Parallel Tool Execution 如何取舍
+9. Tool Dependency Graph 如何处理依赖、副作用和状态竞争
+10. OpenAI Agents SDK / Claude Code / LangGraph 中 Multi-step Execution 如何映射
+11. Multi Tool Loop 与 Workflow 的边界是什么
+12. 为什么很多企业所谓 Agent 更接近 AI Assistant + Workflow
+
+## Part H 核心认知
+
+- 单次 Tool Calling 只能完成一次动作，Multi Tool Loop 才能让 Agent 在反馈中持续完成目标
+- Agent 的核心不是会调用 Tool，而是能在 Observation 中持续调整下一步行动
+- Multi Tool Loop = Tool Call Chain + Observation Feedback + Runtime State Transition
+- ToolCall 表示我要做什么，Observation 表示世界发生了什么
+- Runtime 必须控制 Stop Condition、max steps、timeout、token budget、cost budget、retry policy 和 duplicate action detection
+- Agent Executor Loop 管整个任务循环，Tool Executor 管单个 Tool 的安全可靠执行
+- Parallel Tool Execution 不是简单 `Promise.all`，而是 Runtime 调度、依赖分析和状态一致性问题
+- Workflow 解决确定怎么走，Multi Tool Loop 解决不知道下一步怎么走
+- 大量企业 AI 落地更适合 AI Assistant + Workflow，开放任务才更需要 Autonomous Agent

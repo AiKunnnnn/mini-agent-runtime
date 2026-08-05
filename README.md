@@ -45,6 +45,7 @@ mini-agent-runtime/
   - [Day05 Part E：Tool Executor](notes/day05-tool-calling/day05-part-e-tool-executor.md)
   - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](notes/day05-tool-calling/day05-part-f-permission-human-approval.md)
   - [Day05 Part G：Tool Result 回流 Runtime](notes/day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
+  - [Day05 Part H：Multi Tool Loop](notes/day05-tool-calling/day05-part-h-multi-tool-loop.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 
@@ -83,6 +84,11 @@ mini-agent-runtime/
 - Day08：Human Approval
 - Day09：Workflow
 - Day10：MCP
+
+### 附加章节：AI Assistant + Workflow Practice
+
+- 实践 AI Assistant + Workflow：用于专门验证“很多企业所谓 Agent 其实是 AI Assistant + Workflow”的架构判断。
+- 重点区分 AI Assistant、Agentic Workflow 与 Autonomous Agent：能用 Workflow 稳定解决的问题，不强行上 Multi Tool Loop；只有开放任务、不确定路径和需要 Replanning 的场景，才进入真正 Agent Runtime。
 
 后续实现阶段会在 `src/` 中逐步实现一个最小可运行的 `mini-agent-runtime`。
 

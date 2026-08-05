@@ -1,8 +1,8 @@
 # Day05 Part G ChatGPT 分享会话源记录
 
-- 来源链接：https://chatgpt.com/share/6a71a752-1480-83e8-b1f1-fd0632e17d35
+- 来源链接：https://chatgpt.com/share/6a72d681-98d0-83e8-b1d7-2cc10cfd9c54
 - 会话标题：Day05 part G Tool Result 回流 Runtime
-- 抽取时间：2026-08-04
+- 抽取时间：2026-08-05
 
 > 本文件由分享页 React Router 数据中的 `linear_conversation` 结构还原可见 user / assistant / tool 文本消息，用于保留 Day05 Part G 学习原始记录。分享页中的 tool 输出被平台隐藏时，仅能还原其 redacted 提示文本。
 
@@ -8965,3 +8965,276 @@ Agent Runtime
 > Memory 是不是 Observation 的长期存储？
 
 这个问题会和今天的 Observation 边界形成完整闭环。
+
+## 24. User
+
+但是我看到 day05 的学习计划中 part G 之后是- `day05-part-h-multi-tool-loop.md`：Multi Tool Loop
+- `day05-part-i-mini-tool-runtime-implementation.md`：Mini Tool Runtime 实现
+
+## 25. Assistant
+
+你这个提醒是对的，我刚才这里**学习节奏跑偏了一点**。
+
+我前面把 Part G 按照“概念闭环”讲完后，直接进入了固定收尾和 Day06 规划，但按照我们最初制定的 Day05 README：
+
+```text
+Day05 Tool Calling（Execution Engine）
+
+Part A Tool Calling 基础模型
+
+Part B Tool Decision
+
+Part C Tool Schema
+
+Part D Tool Registry
+
+Part E Tool Executor
+
+Part F Permission / Human Approval / Error Handling
+
+Part G Tool Result Runtime Feedback
+
+Part H Multi Tool Loop
+
+Part I Mini Tool Runtime Implementation
+```
+
+所以正确顺序应该是：
+
+```
+Day05 Execution Engine
+
+        |
+        |
+        v
+
+Tool 能力定义
+(A-C)
+
+        |
+        v
+
+Tool 管理与执行
+(D-E)
+
+        |
+        v
+
+安全与可靠性
+(F)
+
+        |
+        v
+
+反馈闭环
+(G)
+
+        |
+        v
+
+多 Tool 协作执行
+(H)
+
+        |
+        v
+
+自己实现 Mini Tool Runtime
+(I)
+```
+
+---
+
+而且实际上 Part H 和 Part I 不能跳。
+
+原因是：
+
+Part G 解决的是：
+
+> 单次 Tool 调用结束以后，Runtime 如何接收反馈并继续推理。
+
+但是现实 Agent 很少只调用一次 Tool。
+
+例如 Coding Agent：
+
+```
+用户：
+
+修复登录 bug
+
+
+LLM:
+
+调用 grep
+
+
+Observation:
+
+找到 auth.ts
+
+
+LLM:
+
+调用 read_file
+
+
+Observation:
+
+读取代码
+
+
+LLM:
+
+调用 edit_file
+
+
+Observation:
+
+修改完成
+
+
+LLM:
+
+调用 test
+
+
+Observation:
+
+测试失败
+
+
+LLM:
+
+再次修改
+
+...
+```
+
+这里就是：
+
+# Part H：Multi Tool Loop
+
+解决：
+
+> Agent 如何连续调用多个 Tool，并管理整个执行轨迹。
+
+---
+
+然后：
+
+# Part I：Mini Tool Runtime Implementation
+
+就是把 Day05 前面所有设计落地：
+
+我们会真正组合：
+
+```text
+Runtime Loop
+
++
+
+Tool Registry
+
++
+
+Tool Schema
+
++
+
+Tool Executor
+
++
+
+Permission
+
++
+
+Observation
+
++
+
+Recovery
+
++
+
+Multi Tool Loop
+```
+
+形成：
+
+```text
+Mini Agent Runtime
+```
+
+---
+
+所以调整一下：
+
+刚才 Part G 的总结保留，但是**Day06 不应该现在开始**。
+
+正确下一步：
+
+# Day05 Part H：Multi Tool Loop
+
+重点：
+
+1. 为什么 Agent Loop 不等于一次 Tool Call
+2. 多 Tool 调用的数据流
+3. Tool Call Chain
+4. Intermediate Observation
+5. Stop Condition（什么时候停止调用 Tool）
+6. 防止无限循环
+7. 最大步数限制（Max Iterations）
+8. OpenAI Agents SDK / Claude Code 的 Multi-step Execution 映射
+
+
+然后：
+
+# Day05 Part I：Mini Tool Runtime Implementation
+
+开始代码设计：
+
+- Runtime Loop
+- Tool Registry
+- Tool Executor
+- Observation Pipeline
+- State Update
+- Multi Tool Execution
+
+
+你刚才这个纠正其实也挺重要，因为它体现了一个 Agent 学习路线上的区别：
+
+**Part G 是“反馈机制”，但不是 Execution Engine 的终点。**
+
+真正完整的 Execution Engine 应该是：
+
+```
+Action
+
+↓
+
+Observation
+
+↓
+
+Decision
+
+↓
+
+Action Again
+
+↓
+
+...
+
+↓
+
+Goal Completed
+```
+
+也就是：
+
+**Part H Multi Tool Loop 才把 Agent Loop 真正闭环。**
+
+我们继续进入：
+
+# Day05 Part H：Multi Tool Loop

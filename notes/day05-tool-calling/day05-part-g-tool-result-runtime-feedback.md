@@ -1,4 +1,4 @@
-# Day05 Part G 学习文档 v1.0：Tool Result 回流 Runtime（Runtime Feedback Loop）
+# Day05 Part G 学习文档 v1.1：Tool Result 回流 Runtime（Runtime Feedback Loop）
 
 > 本文是《从零实现 Agent Runtime》学习阶段的 Day05 Part G 正式学习文档。
 >
@@ -996,7 +996,7 @@ Memory Evaluator
 
 不是所有 Observation 都应该进入 Memory。
 
-Day06 会继续展开：
+Day06 会在 Day05 Part H / Part I 之后继续展开：
 
 > Memory 是不是 Observation 的长期存储？
 
@@ -1656,7 +1656,7 @@ Observation 是当前任务中 Runtime 观察到的事件，Memory 是对未来�
 
 ## 下一节学习计划
 
-Day05 Execution Engine 到 Part G 已经形成闭环：
+Day05 Execution Engine 到 Part G 已经形成了单次 Tool 调用后的反馈闭环：
 
 ```text
 Tool Definition
@@ -1683,23 +1683,50 @@ Context Builder
 Next LLM Turn
 ```
 
-下一阶段进入：
+但 Part G 不是 Day05 Execution Engine 的终点。
+
+按照 Day05 README 的学习计划，下一节应该进入：
 
 ```text
-Day06：Memory System
+Day05 Part H：Multi Tool Loop
 ```
 
 核心问题：
 
-> 当 Agent 已经可以行动并观察结果后，哪些信息应该被长期记住？
+> Agent 如何连续调用多个 Tool，并管理完整执行轨迹？
 
-Day06 计划：
+Part H 重点：
 
-1. Memory 基础模型
-2. Conversation Memory
-3. Semantic Memory
-4. Memory Retrieval
-5. Memory Write Policy
+1. 为什么 Agent Loop 不等于一次 Tool Call
+2. 多 Tool 调用的数据流
+3. Tool Call Chain
+4. Intermediate Observation
+5. Stop Condition
+6. 防止无限循环
+7. 最大步数限制
+8. OpenAI Agents SDK / Claude Code 的 Multi-step Execution 映射
+
+随后进入：
+
+```text
+Day05 Part I：Mini Tool Runtime Implementation
+```
+
+Part I 会把 Day05 前面的设计组合起来：
+
+```text
+Runtime Loop
+  |
+  +-- Tool Registry
+  +-- Tool Schema
+  +-- Tool Executor
+  +-- Permission
+  +-- Observation
+  +-- Recovery
+  +-- Multi Tool Loop
+```
+
+Day06 Memory System 仍然是后续阶段，但它应该在 Day05 Part H / Part I 完成之后再开始。
 
 ---
 
@@ -1920,5 +1947,5 @@ Next Reasoning / Final Answer / Next Tool Call
 
 ## 参考
 
-- ChatGPT 分享记录：https://chatgpt.com/share/6a71a752-1480-83e8-b1f1-fd0632e17d35
+- ChatGPT 分享记录：https://chatgpt.com/share/6a72d681-98d0-83e8-b1d7-2cc10cfd9c54
 - 本地源记录：`source/day05-part-g-chatgpt-share-source.md`

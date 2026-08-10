@@ -27,6 +27,7 @@
   - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](day05-tool-calling/day05-part-f-permission-human-approval.md)
   - [Day05 Part G：Tool Result 回流 Runtime](day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
   - [Day05 Part H：Multi Tool Loop](day05-tool-calling/day05-part-h-multi-tool-loop.md)
+  - [Day05 Part I：Mini Tool Runtime 实现](day05-tool-calling/day05-part-i-mini-tool-runtime-implementation.md)
 
 ## 学习路线
 
@@ -55,6 +56,7 @@
   - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](day05-tool-calling/day05-part-f-permission-human-approval.md)
   - [Day05 Part G：Tool Result 回流 Runtime](day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
   - [Day05 Part H：Multi Tool Loop](day05-tool-calling/day05-part-h-multi-tool-loop.md)
+  - [Day05 Part I：Mini Tool Runtime 实现](day05-tool-calling/day05-part-i-mini-tool-runtime-implementation.md)
 
 ### Part V：Memory System
 
@@ -160,6 +162,9 @@ notes/
     ├── day05-part-h-multi-tool-loop.md
     ├── day05-part-h-multi-tool-loop.pdf
     ├── day05-part-h-multi-tool-loop.docx
+    ├── day05-part-i-mini-tool-runtime-implementation.md
+    ├── day05-part-i-mini-tool-runtime-implementation.pdf
+    ├── day05-part-i-mini-tool-runtime-implementation.docx
     └── source/
 ```
 

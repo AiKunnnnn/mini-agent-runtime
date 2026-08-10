@@ -65,6 +65,11 @@ Tool Calling 的核心不是“LLM 调 API”，而是：
   - [PDF 阅读版](day05-part-h-multi-tool-loop.pdf)
   - [DOCX 可编辑版](day05-part-h-multi-tool-loop.docx)
   - [ChatGPT 分享会话源记录](source/day05-part-h-chatgpt-share-source.md)
+- Day05 Part I：Mini Tool Runtime 实现
+  - [Markdown 主版本](day05-part-i-mini-tool-runtime-implementation.md)
+  - [PDF 阅读版](day05-part-i-mini-tool-runtime-implementation.pdf)
+  - [DOCX 可编辑版](day05-part-i-mini-tool-runtime-implementation.docx)
+  - [ChatGPT 分享会话源记录](source/day05-part-i-chatgpt-share-source.md)
 
 ## Day05 Part A 目标
 
@@ -270,3 +275,31 @@ Day05 Part H：Multi Tool Loop，重点回答：
 - Parallel Tool Execution 不是简单 `Promise.all`，而是 Runtime 调度、依赖分析和状态一致性问题
 - Workflow 解决确定怎么走，Multi Tool Loop 解决不知道下一步怎么走
 - 大量企业 AI 落地更适合 AI Assistant + Workflow，开放任务才更需要 Autonomous Agent
+
+## Day05 Part I 目标
+
+Day05 Part I：Mini Tool Runtime 实现，重点回答：
+
+1. Part A-H 的 Tool Calling 抽象如何落成最小可运行 Runtime
+2. Runtime Skeleton 应该如何拆分 AgentRuntime、RuntimeState、StepRunner 和 LoopGuard
+3. RuntimeState 与 ContextBuilder 为什么必须分离
+4. Tool Interface、Tool Schema、Tool Registry、Tool Executor 如何组成 Tool System
+5. Tool Result 为什么要经过 Observation Processor 后再进入 Runtime State
+6. Agent Executor Loop 与 Tool Executor 的职责边界如何在代码中体现
+7. 为什么 `while(true)` 不是工业 Agent Loop，必须引入 Step 与 Guard
+8. Weather Agent Demo 如何验证 Tool Call -> Observation -> Final Answer 的闭环
+9. Event System、Reducer、Planner、Action Layer、Tool Result 可信度如何连接到工业 Runtime
+10. Day06 Memory System 为什么自然接在 Day05 Execution Engine 之后
+
+## Part I 核心认知
+
+- Mini Runtime 的目标不是把 Tool 调起来，而是验证“决策 -> 执行 -> 反馈 -> 状态演化”的完整闭环
+- AgentRuntime 是生命周期管理器，不是 LLM Wrapper，也不是 Tool 管理器
+- RuntimeState 是真实运行现场，Context 是给 LLM 看的投影视图
+- Tool 不是函数，而是 Runtime 可调度的一项能力契约
+- Tool Registry 管理能力空间，Context Builder 管理信息空间
+- Tool Executor 管单个 Tool 的安全可靠执行，Agent Executor Loop 管整个任务循环
+- StepRunner 负责一轮怎么跑，AgentRuntime 负责是否继续跑
+- LoopGuard 代表 Runtime Policy，负责 max steps、timeout、budget 和无进展检测等控制
+- Observation 是 Runtime 对外部世界反馈的理解，不是 Tool Result 的简单转发
+- Agent 的核心不是调用工具，而是 Runtime 如何管理 Decision、Execution、Feedback 和 State Transition

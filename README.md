@@ -23,33 +23,13 @@ mini-agent-runtime/
 
 ## 学习笔记
 
-- [Day1：AI Agent 到底是什么？](notes/day01-agent-basics/day01-agent-basics.md)
-- [Day2：Agent Runtime —— 谁才是真正的大脑？](notes/day02-runtime/day02-runtime.md)
-- [Day3：Runtime Architecture](notes/day03-runtime-architecture/README.md)
-  - [Day03-01：Runtime Architecture Design Principles](notes/day03-runtime-architecture/day03-01-runtime-architecture-design-principles.md)
-  - [Day03-02：Runtime Core Components](notes/day03-runtime-architecture/day03-02-runtime-core-components.md)
-  - [Day03-03：Conversation & Message Data Model](notes/day03-runtime-architecture/day03-03-conversation-message-data-model.md)
-- [Day04：Runtime 如何思考（How Runtime Thinks）](notes/day04-how-runtime-thinks/README.md)
-  - [Day04 Part A：Prompt 不是 Context](notes/day04-how-runtime-thinks/day04-part-a-prompt-is-not-context.md)
-  - [Day04 Part B-01：Runtime State](notes/day04-how-runtime-thinks/day04-part-b-01-runtime-state.md)
-  - [Day04 Part B-02：Runtime State Lifecycle](notes/day04-how-runtime-thinks/day04-part-b-02-runtime-state-lifecycle.md)
-  - [Day04 Part C：Context Builder Projection](notes/day04-how-runtime-thinks/day04-part-c-context-builder-projection.md)
-  - [Day04 Part D：Context Window Management](notes/day04-how-runtime-thinks/day04-part-d-context-window-management.md)
-  - [Day04 Part E：Provider Adapter](notes/day04-how-runtime-thinks/day04-part-e-provider-adapter.md)
-- [Day04.5：Agent Runtime Industrial Mapping（工业术语映射）](notes/day04.5-agent-runtime-industrial-mapping/README.md)
-- [Day05：Tool Calling（Execution Engine）](notes/day05-tool-calling/README.md)
-  - [Day05 Part A：Tool Calling 基础模型](notes/day05-tool-calling/day05-part-a-tool-calling-basics.md)
-  - [Day05 Part B：LLM 如何决定调用 Tool](notes/day05-tool-calling/day05-part-b-tool-decision.md)
-  - [Day05 Part C：Tool Schema 设计](notes/day05-tool-calling/day05-part-c-tool-schema.md)
-  - [Day05 Part D：Tool Registry](notes/day05-tool-calling/day05-part-d-tool-registry.md)
-  - [Day05 Part E：Tool Executor](notes/day05-tool-calling/day05-part-e-tool-executor.md)
-  - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](notes/day05-tool-calling/day05-part-f-permission-human-approval.md)
-  - [Day05 Part G：Tool Result 回流 Runtime](notes/day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
-  - [Day05 Part H：Multi Tool Loop](notes/day05-tool-calling/day05-part-h-multi-tool-loop.md)
-  - [Day05 Part I：Mini Tool Runtime 实现](notes/day05-tool-calling/day05-part-i-mini-tool-runtime-implementation.md)
+完整学习笔记目录见：[notes/README.md](notes/README.md)。
+
+当前已进入：
+
 - [Day06：Memory System](notes/day06-memory/README.md)
 
-每一天的学习资料独立放在一个文件夹里，包含：
+每一天的学习资料独立放在 `notes/` 下的独立文件夹里，包含：
 
 - Markdown：主版本，适合 GitHub 阅读和后续维护。
 - PDF：阅读版。

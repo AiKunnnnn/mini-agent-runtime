@@ -50,15 +50,6 @@
 ### Part IV：Execution Engine
 
 - [Day05：Tool Calling（Execution Engine）](day05-tool-calling/README.md)
-  - [Day05 Part A：Tool Calling 基础模型](day05-tool-calling/day05-part-a-tool-calling-basics.md)
-  - [Day05 Part B：LLM 如何决定调用 Tool](day05-tool-calling/day05-part-b-tool-decision.md)
-  - [Day05 Part C：Tool Schema 设计](day05-tool-calling/day05-part-c-tool-schema.md)
-  - [Day05 Part D：Tool Registry](day05-tool-calling/day05-part-d-tool-registry.md)
-  - [Day05 Part E：Tool Executor](day05-tool-calling/day05-part-e-tool-executor.md)
-  - [Day05 Part F：Permission & Human Approval（含 Human-in-the-loop）](day05-tool-calling/day05-part-f-permission-human-approval.md)
-  - [Day05 Part G：Tool Result 回流 Runtime](day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
-  - [Day05 Part H：Multi Tool Loop](day05-tool-calling/day05-part-h-multi-tool-loop.md)
-  - [Day05 Part I：Mini Tool Runtime 实现](day05-tool-calling/day05-part-i-mini-tool-runtime-implementation.md)
 
 ### Part V：Memory System
 

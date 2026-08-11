@@ -95,7 +95,7 @@ def strip_inline_markup(text: str) -> str:
     return text
 
 
-DOCX_BODY_FONT = "Arial Unicode MS"
+DOCX_BODY_FONT = "Heiti SC"
 DOCX_CODE_FONT = "Menlo"
 
 

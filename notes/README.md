@@ -28,6 +28,8 @@
   - [Day05 Part G：Tool Result 回流 Runtime](day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
   - [Day05 Part H：Multi Tool Loop](day05-tool-calling/day05-part-h-multi-tool-loop.md)
   - [Day05 Part I：Mini Tool Runtime 实现](day05-tool-calling/day05-part-i-mini-tool-runtime-implementation.md)
+- [Day06：Memory System](day06-memory/README.md)
+  - [Day06 Part A：Memory 基础模型](day06-memory/day06-part-a-memory-foundation.md)
 
 ## 学习路线
 
@@ -60,7 +62,7 @@
 
 ### Part V：Memory System
 
-- Day06：Memory
+- [Day06：Memory System](day06-memory/README.md)
 
 ### Part VI：Advanced Runtime
 
@@ -165,6 +167,13 @@ notes/
     ├── day05-part-i-mini-tool-runtime-implementation.md
     ├── day05-part-i-mini-tool-runtime-implementation.pdf
     ├── day05-part-i-mini-tool-runtime-implementation.docx
+    └── source/
+
+└── day06-memory/
+    ├── README.md
+    ├── day06-part-a-memory-foundation.md
+    ├── day06-part-a-memory-foundation.pdf
+    ├── day06-part-a-memory-foundation.docx
     └── source/
 ```
 

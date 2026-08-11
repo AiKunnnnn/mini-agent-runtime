@@ -47,6 +47,7 @@ mini-agent-runtime/
   - [Day05 Part G：Tool Result 回流 Runtime](notes/day05-tool-calling/day05-part-g-tool-result-runtime-feedback.md)
   - [Day05 Part H：Multi Tool Loop](notes/day05-tool-calling/day05-part-h-multi-tool-loop.md)
   - [Day05 Part I：Mini Tool Runtime 实现](notes/day05-tool-calling/day05-part-i-mini-tool-runtime-implementation.md)
+- [Day06：Memory System](notes/day06-memory/README.md)
 
 每一天的学习资料独立放在一个文件夹里，包含：
 
@@ -77,7 +78,7 @@ mini-agent-runtime/
 
 ### Part V：Memory System
 
-- Day06：Memory
+- [Day06：Memory System](notes/day06-memory/README.md)
 
 ### Part VI：Advanced Runtime
 

@@ -42,6 +42,11 @@ Day06 的目标是理解 Agent 如何具备长期记忆能力，并实现一个�
   - [PDF 阅读版](day06-part-a-memory-foundation.pdf)
   - [DOCX 可编辑版](day06-part-a-memory-foundation.docx)
   - [ChatGPT 分享会话源记录](source/day06-part-a-chatgpt-share-source.md)
+- Day06 Part B：Memory Architecture（记忆系统架构）
+  - [Markdown 主版本](day06-part-b-memory-architecture.md)
+  - [PDF 阅读版](day06-part-b-memory-architecture.pdf)
+  - [DOCX 可编辑版](day06-part-b-memory-architecture.docx)
+  - [ChatGPT 分享会话源记录](source/day06-part-b-chatgpt-share-source.md)
 
 ## Day06 Part A 目标
 
@@ -71,3 +76,35 @@ Day06 Part A：Memory 基础模型，重点回答：
 - Memory 不应直接全部塞给 LLM，而应经过 Retrieval、Ranking 和 Context Builder 的预算管理
 - Vector Database 只是 Memory Store 的一种实现，不等于完整 Memory System
 - Memory System 也是安全边界，需要 Privacy Filter、Confidence 和治理策略
+
+## Day06 Part B 目标
+
+Day06 Part B：Memory Architecture，重点回答：
+
+1. Memory System 的整体架构应该如何拆分
+2. Memory Write Path 和 Read Path 有什么区别
+3. Memory Store 为什么是领域抽象，而不是 Vector DB
+4. Memory Entity 应该包含哪些结构化字段
+5. Embedding、Vector Search、Vector DB 各自负责什么
+6. Retriever 与 Ranker 的职责边界是什么
+7. 为什么工业 Memory Retrieval 通常需要 Hybrid Retrieval
+8. Memory 为什么需要 Context Budget 和 Projection
+9. Memory 如何通过 Context Builder 进入 LLM Context
+10. Memory 与 RAG、Knowledge Base、Vector DB 的区别是什么
+11. 企业知识库为什么不是简单的 Chunk + Embedding + Top-K
+12. Memory Update 为什么不能只依赖 Vector Similarity
+
+## Part B 核心认知
+
+- Memory Architecture 由 Write Path 和 Read Path 组成
+- Memory Store 是长期 State Repository，不是简单文本列表
+- Vector DB 是 Memory Store 的一种基础设施实现，不等于 Memory System
+- Embedding 是语义表示技术，Vector Search 是相似度检索能力
+- Retriever 负责召回候选，Ranker 负责排序与选择
+- 相似度高不等于一定应该进入当前上下文
+- Query similarity 是动态相关性，不是 Memory 自身永久固定的分数
+- Hybrid Retrieval 会结合 keyword、semantic、metadata、recency 等信号
+- Context Builder 负责把 Memory Record 投影成 LLM 可读的 Context Block
+- Memory 和 RAG 可共享 Retrieval 技术，但数据来源、生命周期和语义不同
+- 企业知识库的难点在 parsing、chunking、metadata、retrieval、rerank、context assembly 整条链路
+- Memory Update 需要 Semantic Similarity + 结构化类型 + 生命周期判断

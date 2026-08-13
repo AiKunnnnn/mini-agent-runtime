@@ -30,6 +30,8 @@
   - [Day05 Part I：Mini Tool Runtime 实现](day05-tool-calling/day05-part-i-mini-tool-runtime-implementation.md)
 - [Day06：Memory System](day06-memory/README.md)
   - [Day06 Part A：Memory 基础模型](day06-memory/day06-part-a-memory-foundation.md)
+  - [Day06 Part B：Memory Architecture（记忆系统架构）](day06-memory/day06-part-b-memory-architecture.md)
+  - [Day06 Part C：Memory Lifecycle（记忆生命周期）](day06-memory/day06-part-c-memory-lifecycle.md)
 
 ## 学习路线
 
@@ -165,6 +167,12 @@ notes/
     ├── day06-part-a-memory-foundation.md
     ├── day06-part-a-memory-foundation.pdf
     ├── day06-part-a-memory-foundation.docx
+    ├── day06-part-b-memory-architecture.md
+    ├── day06-part-b-memory-architecture.pdf
+    ├── day06-part-b-memory-architecture.docx
+    ├── day06-part-c-memory-lifecycle.md
+    ├── day06-part-c-memory-lifecycle.pdf
+    ├── day06-part-c-memory-lifecycle.docx
     └── source/
 ```
 

@@ -47,6 +47,11 @@ Day06 的目标是理解 Agent 如何具备长期记忆能力，并实现一个�
   - [PDF 阅读版](day06-part-b-memory-architecture.pdf)
   - [DOCX 可编辑版](day06-part-b-memory-architecture.docx)
   - [ChatGPT 分享会话源记录](source/day06-part-b-chatgpt-share-source.md)
+- Day06 Part C：Memory Lifecycle（记忆生命周期）
+  - [Markdown 主版本](day06-part-c-memory-lifecycle.md)
+  - [PDF 阅读版](day06-part-c-memory-lifecycle.pdf)
+  - [DOCX 可编辑版](day06-part-c-memory-lifecycle.docx)
+  - [ChatGPT 会话源记录](source/day06-part-c-chatgpt-share-source.md)
 
 ## Day06 Part A 目标
 
@@ -108,3 +113,39 @@ Day06 Part B：Memory Architecture，重点回答：
 - Memory 和 RAG 可共享 Retrieval 技术，但数据来源、生命周期和语义不同
 - 企业知识库的难点在 parsing、chunking、metadata、retrieval、rerank、context assembly 整条链路
 - Memory Update 需要 Semantic Similarity + 结构化类型 + 生命周期判断
+
+## Day06 Part C 目标
+
+Day06 Part C：Memory Lifecycle，重点回答：
+
+1. 为什么 Memory 需要 Lifecycle，而不是只 append
+2. Memory 为什么是 State，不是 Conversation Event
+3. 一条 Observation 什么时候值得被 Create 成 Memory
+4. Memory Extraction 和 Memory Create 有什么区别
+5. Importance、Confidence、Scope 如何参与 Create Decision
+6. Vue 到 React 这种偏好变化如何判断 Update / Merge
+7. 为什么 Semantic Similarity 不能决定 State Identity
+8. Type、Slot、Entity、Scope、Temporal Signal 各自负责什么
+9. Update、Merge、Conflict 的边界是什么
+10. Memory 为什么需要 Decay
+11. Forget 为什么不等于 Physical Delete
+12. LLM、Policy、Runtime 在 Lifecycle Engine 中如何分工
+13. Current State + History / Audit Log 为什么有价值
+14. Lifecycle、Retrieval、Projection 的职责边界是什么
+
+## Part C 核心认知
+
+- Memory Lifecycle 不是 CRUD，而是 Long-term State Reconciliation
+- Memory Create 是 State Promotion，不是简单 save
+- Extraction 不等于 Create；Candidate 还要经过 Runtime Decision
+- Importance 表示长期价值，Confidence 表示可信度，Scope 表示成立范围
+- Similarity 只能判断相关，不能判断两个 Memory 是否属于同一个 State
+- 判断 Update 需要 Type、Slot、Entity、Scope、Temporal Signal 和 LLM Judgment
+- Update 是同一个 State Slot 的值变化，Merge 是多条信息合成更完整状态
+- Conflict 不一定是错误，而是当前信息不足以确定 State Relationship
+- Decay 是有效性下降，不是删除
+- Forget 是逻辑生命周期变化，不等于 Physical Delete
+- Memory Store 可以拆成 Current State 和 History / Audit Log
+- LLM 负责语义判断，Policy 负责硬约束，Runtime 负责最终状态变化
+- Lifecycle Validity、Retrieval Relevance、Context Projection 是三个不同问题
+- Active Memory 不代表一定进入当前 Context

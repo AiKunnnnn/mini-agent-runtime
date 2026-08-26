@@ -1,4 +1,4 @@
-# Day06 Part D 学习文档 v1.2：Memory × Context Builder
+# Day06 Part D 学习文档 v1.3：Memory × Context Builder
 
 > 本文是《从零实现 Agent Runtime》学习阶段的 Day06 Part D 正式学习文档。
 >
@@ -1320,7 +1320,7 @@ Tool Calling / Execution Engine
 Memory System
 ```
 
-完成 Day06 Part E、Part F 后，不再继续无限拆分基础理论，而是进入：
+完成 Day06 Part E 后，Day06 正式收尾，不再单独设置 Part F。原 Part F 的 Industrial Memory Mapping 目标并入 Pi Agent 源码解剖，然后进入：
 
 ```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1486,6 +1486,16 @@ Part E 重点回答：
 - Memory Context Budget 与 Projection 如何落成代码。
 - Memory Trace 如何记录 Selection 和 Eviction 原因。
 - Memory 如何在 Runtime Loop 中被重新检索和评估。
+
+Part E 完成后：
+
+```text
+Day06 Memory 完成
+        ↓
+Pi Agent 源码解剖
+```
+
+不再单独进入 Part F。原 Part F 的工业映射任务改为在 Pi Agent 阶段通过真实源码完成。
 
 ## 最终一句话
 

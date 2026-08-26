@@ -66,7 +66,7 @@ Part IX：工业级 Agent 工程能力
   Permission / Data Security
 ```
 
-Day06 是学习方式的转折点。Part E、Part F 完成后，减少独立理论章节，优先通过真实源码、Mini Runtime 整合和业务项目学习 Streaming、Workflow、MCP、RAG 等能力。
+Day06 是学习方式的转折点。Part E：Mini Memory Runtime Implementation 是 Day06 的最终收尾；完成后不再单独进入 Part F。原 Part F 的 Industrial Memory Mapping 并入 Pi Agent 源码解剖，随后优先通过真实源码、Mini Runtime 整合和业务项目学习 Streaming、Workflow、MCP、RAG 等能力。
 
 Day06 之后的主要学习循环调整为：
 

@@ -32,8 +32,7 @@ Day06 的目标是理解 Agent 如何具备长期记忆能力，并实现一个�
 - [x] `day06-part-b-memory-architecture.md`：Memory Architecture（记忆系统架构）
 - [x] `day06-part-c-memory-lifecycle.md`：Memory Lifecycle（记忆生命周期）
 - [x] `day06-part-d-memory-context-integration.md`：Memory 与 Context Builder 集成
-- [ ] `day06-part-e-mini-memory-runtime.md`：Mini Memory Runtime 实现
-- [ ] `day06-part-f-industrial-mapping.md`：工业 Memory 映射
+- [ ] `day06-part-e-mini-memory-runtime.md`：Mini Memory Runtime Implementation（Day06 收尾）
 
 Part D 已完成 D-1～D-6，并吸收以下三个工业补充点，不再继续拆分 D-7、D-8：
 
@@ -41,9 +40,11 @@ Part D 已完成 D-1～D-6，并吸收以下三个工业补充点，不再继续
 2. Memory Retrieval 可以参与 Runtime Loop，而非只发生一次。
 3. Memory Retrieval、Selection、Projection 必须具备 Observability。
 
-下一步直接进入 Part E。
+下一步直接进入 Part E。Part E 完成后，Day06 正式结束。
 
-完成 Part E、Part F 后，学习路线进入新的阶段：
+原计划中的 Part F：Industrial Memory Mapping 不再作为独立章节，其目标并入 Pi Agent 源码解剖：直接把 Memory、Context、Tool、State、Execution Loop 映射到真实开源 Runtime。
+
+完成 Part E 后，学习路线进入新的阶段：
 
 ```text
 Pi Agent 源码解剖

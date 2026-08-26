@@ -33,6 +33,7 @@
   - [Day06 Part B：Memory Architecture（记忆系统架构）](day06-memory/day06-part-b-memory-architecture.md)
   - [Day06 Part C：Memory Lifecycle（记忆生命周期）](day06-memory/day06-part-c-memory-lifecycle.md)
   - [Day06 Part D：Memory × Context Builder](day06-memory/day06-part-d-memory-context-integration.md)
+  - [Day06 Part E：Mini Memory Runtime Implementation](day06-memory/day06-part-e-mini-memory-runtime.md)
 
 ## 学习路线
 
@@ -186,6 +187,7 @@ notes/
     ├── day06-part-c-memory-lifecycle.pdf
     ├── day06-part-c-memory-lifecycle.docx
     ├── day06-part-d-memory-context-integration.md
+    ├── day06-part-e-mini-memory-runtime.md
     └── source/
 ```
 

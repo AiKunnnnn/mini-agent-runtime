@@ -32,7 +32,7 @@ Day06 的目标是理解 Agent 如何具备长期记忆能力，并实现一个�
 - [x] `day06-part-b-memory-architecture.md`：Memory Architecture（记忆系统架构）
 - [x] `day06-part-c-memory-lifecycle.md`：Memory Lifecycle（记忆生命周期）
 - [x] `day06-part-d-memory-context-integration.md`：Memory 与 Context Builder 集成
-- [ ] `day06-part-e-mini-memory-runtime.md`：Mini Memory Runtime Implementation（Day06 收尾）
+- [x] `day06-part-e-mini-memory-runtime.md`：Mini Memory Runtime Implementation（Day06 收尾）
 
 Part D 已完成 D-1～D-6，并吸收以下三个工业补充点，不再继续拆分 D-7、D-8：
 
@@ -40,7 +40,7 @@ Part D 已完成 D-1～D-6，并吸收以下三个工业补充点，不再继续
 2. Memory Retrieval 可以参与 Runtime Loop，而非只发生一次。
 3. Memory Retrieval、Selection、Projection 必须具备 Observability。
 
-下一步直接进入 Part E。Part E 完成后，Day06 正式结束。
+Part E 已完成 Mini Memory Runtime 的架构闭环，并补齐并发控制、幂等、异步一致性、降级、可观测性、真实 Agent 映射和 Day06 固定收尾。Day06 至此正式结束。
 
 原计划中的 Part F：Industrial Memory Mapping 不再作为独立章节，其目标并入 Pi Agent 源码解剖：直接把 Memory、Context、Tool、State、Execution Loop 映射到真实开源 Runtime。
 
@@ -95,6 +95,9 @@ Planning / Evaluation / Observability / Reliability
   - [知识学习会话](https://chatgpt.com/share/6a8d563e-a534-83ee-8642-b3ada1dd5ef1)
   - [完整路线调整会话（需登录）](https://chatgpt.com/c/6a8d2e07-5ebc-83e8-98a9-306b4b7eba5a)
   - [学习路线变更的原始讨论](https://chatgpt.com/share/6a8e5b33-a3e8-83e8-b121-5df9580ca33a)
+- Day06 Part E：Mini Memory Runtime Implementation
+  - [Markdown 主版本](day06-part-e-mini-memory-runtime.md)
+  - [ChatGPT 学习会话（需登录）](https://chatgpt.com/c/6a8e5d9f-f66c-83ee-b67e-56a3c5fadc83)
 
 > 日常学习只生成 Markdown；PDF / DOCX 留到阶段性整理时统一批量导出。
 
@@ -227,3 +230,36 @@ Day06 Part D：Memory × Context Builder，重点回答：
 - Context Snapshot 是 Runtime World 面向 LLM 的认知投影
 - Memory Retrieval 可以在 Multi Tool Loop 中被重新触发
 - Retrieval、Selection、Eviction、Projection 应保留可解释 Trace
+
+## Day06 Part E 目标
+
+Day06 Part E：Mini Memory Runtime Implementation，重点回答：
+
+1. Retrieval、Context Builder、LLM、Extraction、Reconciliation 与 Store 如何形成完整闭环
+2. Memory Candidate 为什么不能直接成为 Canonical Memory
+3. CREATE、UPDATE、MERGE、IGNORE 的职责边界是什么
+4. Canonical State、Version History 与 Audit Event 如何分层
+5. Memory 并发写入为什么会出现 Lost Update，以及如何使用 Optimistic Lock
+6. Idempotency 与 Semantic Deduplication 有什么区别
+7. Memory Pipeline 应该同步还是异步，以及如何处理 Read-after-write Consistency
+8. Memory 故障何时可以 Graceful Degradation，何时必须失败
+9. Provenance、False Memory Rate 与保守 Write Policy 为什么重要
+10. Mini Runtime 与生产系统之间应如何渐进演进
+11. Chat Assistant 与 Coding Agent 的 Memory 有何不同
+12. Memory 与 Workspace Index、Checkpoint、Summary、RAG、Knowledge Base、Source of Truth 的边界是什么
+13. Day04～Day06 如何汇入同一个 Agent Runtime Loop
+
+## Part E 核心认知
+
+- Memory 是 Runtime State Lifecycle 跨 Run、跨 Session 的延伸
+- Candidate 不等于 Canonical Memory，写入前必须经过 Matching 与 Reconciliation
+- Similarity 只能回答是否相关，不能单独决定 State Identity
+- 乐观锁解决并发 Lost Update，幂等键解决重复执行，语义去重解决不同操作产生的重复状态
+- 个性化 Memory 通常是 Best-effort Side Effect，关键业务状态需要更强的持久化保证
+- 异步写入可以降低响应延迟，但会引入 Eventual Consistency 与 Read-after-write 问题
+- Graceful Degradation 必须服从 Optional / Required Dependency 的业务语义
+- Memory Write 的长期污染风险通常高于单次错误 Retrieval，因此 Write Policy 应更保守
+- Provenance、Version、Audit、Trace 和 False Memory Monitoring 是生产级 Memory 的重要治理能力
+- 真实系统不一定有教学模型中的同名类，源码阅读应寻找职责而不是类名
+- Memory 不等于 Chat History、Vector DB、Context、Knowledge Base 或 Source of Truth
+- Memory 的本质是一套 Long-term State Lifecycle

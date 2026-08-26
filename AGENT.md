@@ -28,7 +28,8 @@
 适合处理：
 
 - 根据聊天内容生成 `notes/dayXX-*` 学习文档。
-- 将 Markdown 导出为 PDF / DOCX。
+- 在学习阶段生成和维护 Markdown 学习文档。
+- 在阶段性整理或写书前，统一批量导出 PDF / DOCX。
 - 修改 `README.md`、`WORKFLOW.md` 等项目文档。
 - 后续实现 `src/` 下的代码。
 - 后续整理 `book/` 下的正式书稿。
@@ -38,8 +39,8 @@
 1. 学习、笔记、写书、写代码分离。
 2. Chat 负责思考，Workspace Task 负责执行。
 3. 每天学习结束后必须沉淀当天学习文档。
-4. Markdown 是唯一主版本，PDF 和 DOCX 是派生版本。
-5. 不追求当天文档一次完美，先完成 v1，再按需要迭代。
+4. Markdown 是唯一主版本；日常学习只生成 Markdown，PDF 和 DOCX 留到阶段性整理时统一批量生成。
+5. 正式文档不追求一次完美，先完成 v1，再按需要迭代。
 6. 写书阶段不直接复制聊天记录，而是基于学习文档重新组织。
 7. 写代码阶段以学习文档中的设计为依据，代码必须能运行和验证。
 
@@ -62,9 +63,7 @@ mini-agent-runtime/
 ```text
 notes/day03-runtime-architecture/
 ├── README.md
-├── day03-runtime-architecture.md
-├── day03-runtime-architecture.pdf
-└── day03-runtime-architecture.docx
+└── day03-runtime-architecture.md
 ```
 
 学习文档建议包含：
@@ -98,7 +97,7 @@ notes/day03-runtime-architecture/
 要求：
 1. 不重复讲上一天已经掌握的基础内容。
 2. 保持“先推导，再总结，再沉淀”的学习方式。
-3. 今天结束后仍然输出 DayX 学习文档，并包含写书 TODO 和写书素材。
+3. 今天结束后输出 DayX Markdown 学习文档，并包含写书 TODO 和写书素材。
 ```
 
 不要在每一天都粘贴所有历史文档，避免上下文过长。需要引用历史细节时，再单独提供对应 `notes/dayXX-*` 文档。

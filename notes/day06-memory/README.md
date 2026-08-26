@@ -28,12 +28,49 @@ Day06 的目标是理解 Agent 如何具备长期记忆能力，并实现一个�
 
 ## Day06 学习计划
 
-- `day06-part-a-memory-foundation.md`：Memory 基础模型
-- `day06-part-b-memory-architecture.md`：Memory Architecture（记忆系统架构）
-- `day06-part-c-memory-lifecycle.md`：Memory Lifecycle（记忆生命周期）
-- `day06-part-d-memory-context-integration.md`：Memory 与 Context Builder 集成
-- `day06-part-e-mini-memory-runtime.md`：Mini Memory Runtime 实现
-- `day06-part-f-industrial-mapping.md`：工业 Memory 映射
+- [x] `day06-part-a-memory-foundation.md`：Memory 基础模型
+- [x] `day06-part-b-memory-architecture.md`：Memory Architecture（记忆系统架构）
+- [x] `day06-part-c-memory-lifecycle.md`：Memory Lifecycle（记忆生命周期）
+- [x] `day06-part-d-memory-context-integration.md`：Memory 与 Context Builder 集成
+- [ ] `day06-part-e-mini-memory-runtime.md`：Mini Memory Runtime 实现
+- [ ] `day06-part-f-industrial-mapping.md`：工业 Memory 映射
+
+Part D 已完成 D-1～D-6，并吸收以下三个工业补充点，不再继续拆分 D-7、D-8：
+
+1. Global Context Budget 到 Memory Budget 的分配职责。
+2. Memory Retrieval 可以参与 Runtime Loop，而非只发生一次。
+3. Memory Retrieval、Selection、Projection 必须具备 Observability。
+
+下一步直接进入 Part E。
+
+完成 Part E、Part F 后，学习路线进入新的阶段：
+
+```text
+Pi Agent 源码解剖
+        ↓
+Codex + Mini Agent Runtime
+        ↓
+RAG 工程实现（在项目中补齐）
+        ↓
+企业智能客服 Agent
+        ↓
+Data Agent
+        ↓
+Planning / Evaluation / Observability / Reliability
+        ↓
+工业级 Agent
+```
+
+这代表学习方式从“继续扩展基础理论”切换为“阅读真实源码、解释设计、对照并构建自己的 Runtime”。
+
+当前 RAG 学习定位：
+
+- RAG Architecture：已理解。
+- RAG 在 Agent 中的位置：已理解。
+- Context 注入：已理解。
+- Parsing、Chunking、Embedding、Retrieval、Reranking 等工程实现：需要在项目中补齐。
+
+因此不单独安排一段长时间的 RAG 理论课，而是在企业智能客服等项目中把 RAG、Context、Tool、Memory 与 Runtime 串起来。
 
 ## 文件
 
@@ -52,6 +89,13 @@ Day06 的目标是理解 Agent 如何具备长期记忆能力，并实现一个�
   - [PDF 阅读版](day06-part-c-memory-lifecycle.pdf)
   - [DOCX 可编辑版](day06-part-c-memory-lifecycle.docx)
   - [ChatGPT 会话源记录](source/day06-part-c-chatgpt-share-source.md)
+- Day06 Part D：Memory × Context Builder
+  - [Markdown 主版本](day06-part-d-memory-context-integration.md)
+  - [知识学习会话](https://chatgpt.com/share/6a8d563e-a534-83ee-8642-b3ada1dd5ef1)
+  - [完整路线调整会话（需登录）](https://chatgpt.com/c/6a8d2e07-5ebc-83e8-98a9-306b4b7eba5a)
+  - [学习路线变更的原始讨论](https://chatgpt.com/share/6a8e5b33-a3e8-83e8-b121-5df9580ca33a)
+
+> 日常学习只生成 Markdown；PDF / DOCX 留到阶段性整理时统一批量导出。
 
 ## Day06 Part A 目标
 
@@ -149,3 +193,36 @@ Day06 Part C：Memory Lifecycle，重点回答：
 - LLM 负责语义判断，Policy 负责硬约束，Runtime 负责最终状态变化
 - Lifecycle Validity、Retrieval Relevance、Context Projection 是三个不同问题
 - Active Memory 不代表一定进入当前 Context
+
+## Day06 Part D 目标
+
+Day06 Part D：Memory × Context Builder，重点回答：
+
+1. 为什么 Retrieval 不等于 Injection
+2. Memory 如何参与全局 Context Budget 竞争
+3. Memory Store Representation 如何投影成 LLM Context Representation
+4. Scope 与 Priority 的职责边界是什么
+5. 怎样识别真正的 Memory Conflict
+6. Update、Merge、Coexist、Uncertain 如何选择
+7. Confidence、Recency、Source、Scope 和 Lifecycle 如何共同参与一致性判断
+8. 为什么不确定性也应该被投影给 LLM
+9. 为什么 Memory 已经是 Summary，进入 Context 时仍需再次压缩
+10. Retrieval 与 Representation Compression 有什么区别
+11. Context Snapshot 为什么是 Runtime World 的 LLM-facing View
+12. Memory Retrieval 如何参与 Runtime Loop
+13. Memory Selection 与 Projection 为什么必须可观测
+
+## Part D 核心认知
+
+- Retrieval 只产生候选，不等于进入 Prompt
+- Memory 是 Context Source 之一，预算由全局 Context Builder / Budget Manager 协调
+- Scope 表示适用范围，Priority 表示当前任务下的 Context 价值
+- 真正冲突需要 Same Entity、Same Scope、Same Semantic Slot 与 Conflicting Value
+- 冲突优先由 Memory Lifecycle / Consistency 层处理
+- 无法消除的不确定性应该被诚实投影给 LLM
+- Memory Compression 压缩的是当前任务下的 Representation，不是 Memory Store
+- Runtime 至少存在 Conversation → Memory、Memory → Memory Context、All Context → Prompt 三次压缩
+- Compression 追求 Information Density，而不是最短文本
+- Context Snapshot 是 Runtime World 面向 LLM 的认知投影
+- Memory Retrieval 可以在 Multi Tool Loop 中被重新触发
+- Retrieval、Selection、Eviction、Projection 应保留可解释 Trace

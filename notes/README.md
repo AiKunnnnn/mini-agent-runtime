@@ -32,6 +32,7 @@
   - [Day06 Part A：Memory 基础模型](day06-memory/day06-part-a-memory-foundation.md)
   - [Day06 Part B：Memory Architecture（记忆系统架构）](day06-memory/day06-part-b-memory-architecture.md)
   - [Day06 Part C：Memory Lifecycle（记忆生命周期）](day06-memory/day06-part-c-memory-lifecycle.md)
+  - [Day06 Part D：Memory × Context Builder](day06-memory/day06-part-d-memory-context-integration.md)
 
 ## 学习路线
 
@@ -57,18 +58,29 @@
 
 - [Day06：Memory System](day06-memory/README.md)
 
-### Part VI：Advanced Runtime
+### Part VI：Pi Agent 源码解剖
 
-- Day07：Streaming Event
-- Day08：Human Approval
-- Day09：Workflow
-- Day10：MCP
+- 真实 Runtime → 源码 → 设计原因 → 对照 Mini Runtime
 
-### 附加章节：AI Assistant + Workflow Practice
+### Part VII：Codex + Mini Agent Runtime
 
-- 实践 AI Assistant + Workflow
-- 区分 AI Assistant、Agentic Workflow 与 Autonomous Agent
-- 验证“流程固化场景更适合 AI Assistant + Workflow，开放任务才更适合 Multi Tool Loop”的架构边界
+- 架构分析 → Codex 实现 → 运行 → Debug → 补理论 → 总结
+
+### Part VIII：Agent 项目实战
+
+- RAG 工程实现（在项目中补齐）
+- 企业智能客服 Agent
+- Data Agent
+
+### Part IX：工业级 Agent 工程能力
+
+- Planning
+- Evaluation
+- Observability
+- Reliability
+- Permission / Data Security
+
+Streaming、Workflow、MCP 等能力改为在源码和项目中按需补齐，不再机械地沿固定 Day07～Day10 继续堆叠理论。
 
 ## 组织规则
 
@@ -173,14 +185,15 @@ notes/
     ├── day06-part-c-memory-lifecycle.md
     ├── day06-part-c-memory-lifecycle.pdf
     ├── day06-part-c-memory-lifecycle.docx
+    ├── day06-part-d-memory-context-integration.md
     └── source/
 ```
 
 规则：
 
-- Markdown 是主版本。
-- PDF 是阅读版。
-- DOCX 是可编辑版。
+- Markdown 是唯一主版本。
+- 日常学习只新增和维护 Markdown。
+- PDF / DOCX 是派生版本，留到阶段性整理或写书前统一批量生成；目录中已有文件继续保留。
 - 原始资料放在当天目录的 `source/` 中。
 - 后续图示、流程图、代码草稿可以放进当天目录的 `assets/` 或 `examples/`。
 - 如果某一天被拆成多个小节，统一放在当天目录下平铺管理，例如 `day03-01-xxx.md`、`day03-02-xxx.md`。

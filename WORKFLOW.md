@@ -49,12 +49,42 @@ Part IV：Execution Engine
 Part V：Memory System
   Day06：Memory
 
-Part VI：Advanced Runtime
-  Day07：Streaming Event
-  Day08：Human Approval
-  Day09：Workflow
-  Day10：MCP
+Part VI：Pi Agent 源码解剖
+
+Part VII：Codex + Mini Agent Runtime
+
+Part VIII：Agent 项目实战
+  RAG 工程实现（在项目中补齐）
+  企业智能客服 Agent
+  Data Agent
+
+Part IX：工业级 Agent 工程能力
+  Planning
+  Evaluation
+  Observability
+  Reliability
+  Permission / Data Security
 ```
+
+Day06 是学习方式的转折点。Part E、Part F 完成后，减少独立理论章节，优先通过真实源码、Mini Runtime 整合和业务项目学习 Streaming、Workflow、MCP、RAG 等能力。
+
+Day06 之后的主要学习循环调整为：
+
+```text
+真实代码 / 项目
+      ↓
+分析架构
+      ↓
+Codex 实现
+      ↓
+运行与 Debug
+      ↓
+按问题补理论
+      ↓
+总结认知
+```
+
+这不是取消概念学习，而是把理论从主线入口调整为解决真实源码和项目问题时的支撑材料。
 
 学习时优先讨论：
 
@@ -72,8 +102,7 @@ Part VI：Advanced Runtime
 
 ```text
 根据今天的聊天内容，生成 DayX 标准学习文档，
-写入 notes/dayXX-topic/，
-并导出 Markdown / PDF / DOCX 三个版本。
+写入 notes/dayXX-topic/，只生成 Markdown 主版本。
 ```
 
 标准输出：
@@ -82,11 +111,10 @@ Part VI：Advanced Runtime
 notes/dayXX-topic/
 ├── README.md
 ├── dayXX-topic.md
-├── dayXX-topic.pdf
-└── dayXX-topic.docx
+└── source/              可选；保存原始学习材料的 Markdown 记录
 ```
 
-Markdown 是主版本，PDF 和 DOCX 由脚本生成。
+Markdown 是学习阶段的唯一输出版本。PDF 和 DOCX 不再按天生成，等阶段性学习完成或进入写书整理时，再从 Markdown 统一批量导出。
 
 ## Day 文档固定结构
 
@@ -134,7 +162,7 @@ Markdown 是主版本，PDF 和 DOCX 由脚本生成。
 
 1. 粘贴上一天学习文档，或至少粘贴上一天文档末尾的“下一章学习计划”。
 2. 告诉 AI 按照该计划继续，不重复上一天已掌握内容。
-3. 当天学习结束后，再通过 `Add to task` 归档为新的 Day 文档。
+3. 当天学习结束后，再通过 `Add to task` 归档为新的 Markdown 文档。
 
 推荐 Prompt：
 
@@ -147,7 +175,7 @@ Markdown 是主版本，PDF 和 DOCX 由脚本生成。
 要求：
 1. 保持 Framework 作者视角。
 2. 先推导，再总结，不直接堆 API。
-3. 今天结束后输出 DayX 学习文档。
+3. 今天结束后输出 DayX Markdown 学习文档。
 4. DayX 文档需要包含写书 TODO、写书素材、与上一章的联系、下一章学习计划。
 ```
 
@@ -201,9 +229,9 @@ book/
 └── README.md
 ```
 
-## 文档导出
+## 文档导出（阶段性批量执行）
 
-当前使用：
+日常学习归档不执行 PDF / DOCX 导出。需要阶段性整理或离线阅读版本时，再统一使用：
 
 ```bash
 python3 scripts/export_learning_note.py \
@@ -217,6 +245,7 @@ python3 scripts/export_learning_note.py \
 - Markdown 是唯一主版本。
 - PDF / DOCX 不手改。
 - 如果需要改内容，先改 Markdown，再重新导出。
+- PDF / DOCX 采用阶段性批量生成，不作为每天学习任务的交付要求。
 
 ## Git 习惯
 

@@ -34,6 +34,8 @@
   - [Day06 Part C：Memory Lifecycle（记忆生命周期）](day06-memory/day06-part-c-memory-lifecycle.md)
   - [Day06 Part D：Memory × Context Builder](day06-memory/day06-part-d-memory-context-integration.md)
   - [Day06 Part E：Mini Memory Runtime Implementation](day06-memory/day06-part-e-mini-memory-runtime.md)
+- [Day07 / Part VI：Pi Agent 源码解剖](day07-pi-agent-source-analysis/README.md)
+  - [Day07 会话 1：架构地图与 Runtime Loop](day07-pi-agent-source-analysis/day07-session-01-architecture-and-runtime-loop.md)
 
 ## 学习路线
 
@@ -59,8 +61,10 @@
 
 - [Day06：Memory System](day06-memory/README.md)
 
-### Part VI：Pi Agent 源码解剖
+### Part VI：Day07 Pi Agent 源码解剖
 
+- [学习目录与进度](day07-pi-agent-source-analysis/README.md)
+- [Day07 会话 1：架构地图与 Runtime Loop](day07-pi-agent-source-analysis/day07-session-01-architecture-and-runtime-loop.md)
 - 真实 Runtime → 源码 → 设计原因 → 对照 Mini Runtime
 
 ### Part VII：Codex + Mini Agent Runtime

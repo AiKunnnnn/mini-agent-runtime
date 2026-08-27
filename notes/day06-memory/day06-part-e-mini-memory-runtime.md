@@ -1078,7 +1078,7 @@ Memory 保存长期状态，Context Builder 决定这些状态本轮如何被模
 Day06 Memory System 至此完成。下一阶段从学习 Runtime 零件切换为：
 
 ```text
-Pi Agent 源码解剖
+Day07：Pi Agent 源码解剖
         ↓
 建立真实 Agent Runtime 全局地图
         ↓

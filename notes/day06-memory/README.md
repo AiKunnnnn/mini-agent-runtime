@@ -42,12 +42,12 @@ Part D 已完成 D-1～D-6，并吸收以下三个工业补充点，不再继续
 
 Part E 已完成 Mini Memory Runtime 的架构闭环，并补齐并发控制、幂等、异步一致性、降级、可观测性、真实 Agent 映射和 Day06 固定收尾。Day06 至此正式结束。
 
-原计划中的 Part F：Industrial Memory Mapping 不再作为独立章节，其目标并入 Pi Agent 源码解剖：直接把 Memory、Context、Tool、State、Execution Loop 映射到真实开源 Runtime。
+原计划中的 Part F：Industrial Memory Mapping 不再作为独立章节，其目标并入 [Day07：Pi Agent 源码解剖](../day07-pi-agent-source-analysis/README.md)：直接把 Memory、Context、Tool、State、Execution Loop 映射到真实开源 Runtime。
 
 完成 Part E 后，学习路线进入新的阶段：
 
 ```text
-Pi Agent 源码解剖
+Day07：Pi Agent 源码解剖
         ↓
 Codex + Mini Agent Runtime
         ↓

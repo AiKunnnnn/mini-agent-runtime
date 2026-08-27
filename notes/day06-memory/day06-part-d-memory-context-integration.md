@@ -1320,7 +1320,7 @@ Tool Calling / Execution Engine
 Memory System
 ```
 
-完成 Day06 Part E 后，Day06 正式收尾，不再单独设置 Part F。原 Part F 的 Industrial Memory Mapping 目标并入 Pi Agent 源码解剖，然后进入：
+完成 Day06 Part E 后，Day06 正式收尾，不再单独设置 Part F。原 Part F 的 Industrial Memory Mapping 目标并入 [Day07：Pi Agent 源码解剖](../day07-pi-agent-source-analysis/README.md)，然后进入：
 
 ```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1329,7 +1329,7 @@ Memory System
 “源码解剖 + 构建 Agent”
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         ↓
-Pi Agent 源码解剖
+Day07：Pi Agent 源码解剖
         ↓
 Codex + Mini Agent Runtime
         ↓
@@ -1344,7 +1344,7 @@ Planning / Evaluation / Observability / Reliability
 工业级 Agent
 ```
 
-### Pi Agent 源码解剖
+### Day07：Pi Agent 源码解剖
 
 这一阶段不再重复“Agent 是什么”，而是直接分析：
 
@@ -1492,7 +1492,7 @@ Part E 完成后：
 ```text
 Day06 Memory 完成
         ↓
-Pi Agent 源码解剖
+Day07：Pi Agent 源码解剖
 ```
 
 不再单独进入 Part F。原 Part F 的工业映射任务改为在 Pi Agent 阶段通过真实源码完成。

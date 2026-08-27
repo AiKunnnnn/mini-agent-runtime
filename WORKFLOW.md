@@ -49,7 +49,12 @@ Part IV：Execution Engine
 Part V：Memory System
   Day06：Memory
 
-Part VI：Pi Agent 源码解剖
+Part VI：Day07 Pi Agent 源码解剖
+  Day07 会话 1：Part VI-A 架构地图 + Part VI-B Runtime Loop
+  会话 2：Part VI-C Agent State + Part VI-D Context / Message Projection
+  会话 3：Part VI-E + Part VI-F + Part VI-G
+  会话 4：Part VI-H + Part VI-I + Part VI-J
+  会话 5：Part VI-K + Part VI-L + Part VI-M
 
 Part VII：Codex + Mini Agent Runtime
 

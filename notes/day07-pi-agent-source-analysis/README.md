@@ -21,7 +21,7 @@ Pi Agent 在这里不是要照搬的框架，而是一个真实 Runtime 解剖�
 - [x] 会话 1：Part VI-A + Part VI-B
   - Part VI-A：Pi Agent 架构地图
   - Part VI-B：Runtime Loop
-- [ ] 会话 2：Part VI-C + Part VI-D
+- [x] 会话 2：Part VI-C + Part VI-D
   - Part VI-C：Pi Agent State
   - Part VI-D：Context Builder / Message Projection
 - [ ] 会话 3：Part VI-E + Part VI-F + Part VI-G
@@ -30,8 +30,12 @@ Pi Agent 在这里不是要照搬的框架，而是一个真实 Runtime 解剖�
 
 ## 文件
 
-- [Day07 会话 1：架构地图与 Runtime Loop](day07-session-01-architecture-and-runtime-loop.md)
-- [Day07 会话 1 ChatGPT 源记录](source/day07-session-01-chatgpt-source.md)
+- Day07 会话 1：架构地图与 Runtime Loop
+  - [Markdown 主版本](day07-session-01-architecture-and-runtime-loop.md)
+  - [ChatGPT 会话源记录](source/day07-session-01-chatgpt-source.md)
+- Day07 会话 2：State 与 Context / Message Projection
+  - [Markdown 主版本](day07-session-02-state-and-context-projection.md)
+  - [ChatGPT 会话源记录](source/day07-session-02-chatgpt-source.md)
 
 > 日常学习只生成和维护 Markdown；PDF / DOCX 留到阶段性整理时统一导出。
 

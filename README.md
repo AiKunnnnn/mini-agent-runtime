@@ -28,7 +28,6 @@ mini-agent-runtime/
 当前已进入：
 
 - [Day07 / Part VI：Pi Agent 源码解剖](notes/day07-pi-agent-source-analysis/README.md)
-- 已完成：[Day07 会话 1：架构地图与 Runtime Loop](notes/day07-pi-agent-source-analysis/day07-session-01-architecture-and-runtime-loop.md)
 
 每一天的学习资料独立放在 `notes/` 下的独立文件夹里。当前学习阶段的新增内容只生成：
 
@@ -63,8 +62,7 @@ mini-agent-runtime/
 
 ### Part VI：Day07 Pi Agent 源码解剖
 
-- [学习目录与进度](notes/day07-pi-agent-source-analysis/README.md)
-- [Day07 会话 1：架构地图与 Runtime Loop](notes/day07-pi-agent-source-analysis/day07-session-01-architecture-and-runtime-loop.md)
+- [Day07：Pi Agent 源码解剖](notes/day07-pi-agent-source-analysis/README.md)
 - 把 Pi Agent 当作“真实世界 Agent Runtime 的解剖样本”。
 - 按 `真实 Runtime → 源码 → 设计原因 → 对照自己的 Mini Runtime` 学习。
 - 将 Runtime State、Context、Tool Calling、Memory、Execution Loop 映射到真实代码。

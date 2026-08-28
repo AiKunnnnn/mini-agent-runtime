@@ -24,7 +24,10 @@ Pi Agent 在这里不是要照搬的框架，而是一个真实 Runtime 解剖�
 - [x] 会话 2：Part VI-C + Part VI-D
   - Part VI-C：Pi Agent State
   - Part VI-D：Context Builder / Message Projection
-- [ ] 会话 3：Part VI-E + Part VI-F + Part VI-G
+- [x] 会话 3：Part VI-E + Part VI-F + Part VI-G
+  - Part VI-E：Tool Definition / Registry
+  - Part VI-F：Tool Execution Pipeline
+  - Part VI-G：Observation / Multi-Tool Flow
 - [ ] 会话 4：Part VI-H + Part VI-I + Part VI-J
 - [ ] 会话 5：Part VI-K + Part VI-L + Part VI-M
 
@@ -36,6 +39,9 @@ Pi Agent 在这里不是要照搬的框架，而是一个真实 Runtime 解剖�
 - Day07 会话 2：State 与 Context / Message Projection
   - [Markdown 主版本](day07-session-02-state-and-context-projection.md)
   - [ChatGPT 会话源记录](source/day07-session-02-chatgpt-source.md)
+- Day07 会话 3：Tool 系统、执行管线与 Observation
+  - [Markdown 主版本](day07-session-03-tool-system-execution-and-observation.md)
+  - [ChatGPT 会话源记录](source/day07-session-03-chatgpt-source.md)
 
 > 日常学习只生成和维护 Markdown；PDF / DOCX 留到阶段性整理时统一导出。
 

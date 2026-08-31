@@ -28,7 +28,10 @@ Pi Agent 在这里不是要照搬的框架，而是一个真实 Runtime 解剖�
   - Part VI-E：Tool Definition / Registry
   - Part VI-F：Tool Execution Pipeline
   - Part VI-G：Observation / Multi-Tool Flow
-- [ ] 会话 4：Part VI-H + Part VI-I + Part VI-J
+- [x] 会话 4：Part VI-H + Part VI-I + Part VI-J
+  - Part VI-H：Runtime Control（运行时控制）
+  - Part VI-I：Streaming & Event Protocol（流式与事件协议）
+  - Part VI-J：Human Approval Boundary（人工审批边界）
 - [ ] 会话 5：Part VI-K + Part VI-L + Part VI-M
 
 ## 文件
@@ -42,6 +45,9 @@ Pi Agent 在这里不是要照搬的框架，而是一个真实 Runtime 解剖�
 - Day07 会话 3：Tool 系统、执行管线与 Observation
   - [Markdown 主版本](day07-session-03-tool-system-execution-and-observation.md)
   - [ChatGPT 会话源记录](source/day07-session-03-chatgpt-source.md)
+- Day07 会话 4：运行时控制、事件协议与人工审批边界
+  - [Markdown 主版本](day07-session-04-runtime-control-events-and-human-approval.md)
+  - [ChatGPT 会话源记录](source/day07-session-04-chatgpt-source.md)
 
 > 日常学习只生成和维护 Markdown；PDF / DOCX 留到阶段性整理时统一导出。
 

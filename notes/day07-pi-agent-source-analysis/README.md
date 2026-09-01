@@ -32,7 +32,10 @@ Pi Agent 在这里不是要照搬的框架，而是一个真实 Runtime 解剖�
   - Part VI-H：Runtime Control（运行时控制）
   - Part VI-I：Streaming & Event Protocol（流式与事件协议）
   - Part VI-J：Human Approval Boundary（人工审批边界）
-- [ ] 会话 5：Part VI-K + Part VI-L + Part VI-M
+- [x] 会话 5：Part VI-K + Part VI-L + Part VI-M
+  - Part VI-K：Session Persistence & Context Reconstruction（会话持久化与上下文重建）
+  - Part VI-L：Dynamic Runtime Configuration（动态运行时配置）
+  - Part VI-M：Pi Agent Runtime Boundary & Mini Runtime Extraction（Pi Agent 运行时边界与 Mini Runtime 反推）
 
 ## 文件
 
@@ -48,6 +51,9 @@ Pi Agent 在这里不是要照搬的框架，而是一个真实 Runtime 解剖�
 - Day07 会话 4：运行时控制、事件协议与人工审批边界
   - [Markdown 主版本](day07-session-04-runtime-control-events-and-human-approval.md)
   - [ChatGPT 会话源记录](source/day07-session-04-chatgpt-source.md)
+- Day07 会话 5：会话重建、动态配置与 Mini Runtime 反推
+  - [Markdown 主版本](day07-session-05-session-reconstruction-dynamic-runtime-and-mini-runtime-extraction.md)
+  - [ChatGPT 会话源记录](source/day07-session-05-chatgpt-source.md)
 
 > 日常学习只生成和维护 Markdown；PDF / DOCX 留到阶段性整理时统一导出。
 

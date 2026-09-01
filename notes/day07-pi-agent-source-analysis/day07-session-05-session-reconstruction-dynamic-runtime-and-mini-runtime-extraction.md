@@ -1188,7 +1188,311 @@ Working Design / Handoff Docs
 17. Weather Agent 端到端示例
 ```
 
-### 5.7 V1 明确暂缓的能力
+如果进一步按实现职责收敛，V1 的主体可以归成六个模块：
+
+```text
+1. Agent Loop
+2. Runtime State + Turn Snapshot
+3. Tool Registry + Tool Executor
+4. Event Protocol
+5. Session / Persistence
+6. Approval Mechanism
+```
+
+ModelProvider（模型提供者）和 ContextBuilder（上下文构建器）是贯穿这些模块的明确接口：前者隔离模型调用，后者负责把 RuntimeState 投影成 Turn Snapshot。
+
+### 5.7 Mini Runtime V1 架构图
+
+原会话最终收敛出的 V1 组件关系如下。这张图比单纯的能力清单更重要，因为它同时表达了调用方向、状态所有权以及 Loop（循环）之外的外围能力：
+
+```text
+                  Application
+                      │
+                      ↓
+              ┌──────────────┐
+              │ Mini Agent   │
+              └──────┬───────┘
+                     │
+        ┌────────────┼────────────┐
+        ↓            ↓            ↓
+    RuntimeState  ToolRegistry  EventBus
+        │            │            │
+        └────────────┼────────────┘
+                     ↓
+              prepareNextTurn
+                     ↓
+               TurnSnapshot
+                     ↓
+                  LLM
+                     ↓
+              AssistantMessage
+                     ↓
+         ┌───────────┴───────────┐
+         ↓                       ↓
+    Final Answer              ToolCall
+                                 ↓
+                          ToolExecutor
+                                 ↓
+                          ToolResult
+                                 ↓
+                             State
+                                 ↓
+                             Loop
+```
+
+Loop 外围还有两条基础设施链：
+
+```text
+SessionStore
+    ↑
+message_end
+```
+
+```text
+AbortController
+→ Cooperative Cancellation（协作式取消）
+```
+
+这张图表达了几个关键边界：
+
+1. `Mini Agent` 是面向 Application（应用层）的公共入口，不是所有实现逻辑的容器。
+2. `RuntimeState` 是当前 Runtime 的状态所有者，UI 和 SessionStore 不应各维护一份竞争状态。
+3. `prepareNextTurn` 是 RuntimeState → TurnSnapshot 的安全投影边界。
+4. `ToolRegistry` 管理能力定义，`ToolExecutor` 管理单次调用执行，两者不能混为一层。
+5. `EventBus` 横切 Runtime，但不应把 UI、日志和持久化逻辑写进 Agent Loop。
+6. `SessionStore` 在提交边界保存稳定事实，不负责序列化整个运行中的对象图。
+7. `AbortController` 通过协作式取消影响 Provider、Tool 与 Hook，不代表同步强杀调用栈。
+
+### 5.8 六个模块如何落到架构中
+
+#### 模块 1：Agent Loop
+
+```text
+User Goal
+   ↓
+LLM
+   ↓
+Assistant Message
+   ↓
+├── Final Answer → stop
+└── Tool Calls
+        ↓
+    execute tools
+        ↓
+    Observation
+        ↓
+    append messages
+        ↓
+       LLM
+```
+
+Loop 应保持小而清晰，只负责编排 Decision → Tool → Observation → Decision；持久化、UI、日志和领域策略不应直接塞入循环。
+
+#### 模块 2：Runtime State + Turn Snapshot
+
+```text
+Runtime Mutable State
+        ↓
+prepareNextTurn()
+        ↓
+Turn Snapshot
+        ↓
+LLM Request
+```
+
+这一模块从第一版就建立 `RuntimeState ≠ TurnSnapshot`，为 Dynamic Tools、Context Compaction、Memory Retrieval 与 Model Routing 留下稳定扩展点。
+
+#### 模块 3：Tool Registry + Tool Executor
+
+```text
+ToolCall
+   ↓
+Registry lookup
+   ↓
+validate arguments
+   ↓
+beforeToolCall
+   ↓
+execute
+   ↓
+normalize result
+   ↓
+ToolResultMessage
+```
+
+Registry 解决“有什么 Tool、怎样找到”，Executor 解决“某一次调用怎样验证、拦截、执行和规范化”。
+
+#### 模块 4：Event Protocol
+
+V1 不需要复制 Pi 的全部事件，但应保留最小协议：
+
+```ts
+type AgentEvent =
+  | { type: "run_start" }
+  | { type: "turn_start" }
+  | { type: "message_end"; message: AgentMessage }
+  | { type: "tool_start"; toolCallId: string }
+  | { type: "tool_end"; toolCallId: string }
+  | { type: "run_end" };
+```
+
+这样 CLI、Web UI、日志、持久化和 Tracing（链路追踪）都可以订阅 Runtime，而不侵入 `runAgentLoop()`。
+
+#### 模块 5：Session / Persistence
+
+V1 只实现 Stable Conversation Recovery（稳定对话恢复）：
+
+```ts
+interface Session {
+  id: string;
+  messages: AgentMessage[];
+  createdAt: number;
+  updatedAt: number;
+}
+```
+
+第一版保持线性 Session 是刻意的范围选择，不妨碍 V2 再演进为 Entry Tree。
+
+#### 模块 6：Approval Mechanism
+
+V1 只提供执行前机制插槽：
+
+```ts
+type BeforeToolCall = (
+  call: ToolCall
+) => Promise<
+  | { allow: true }
+  | { allow: false; reason: string }
+>;
+```
+
+```text
+validate
+   ↓
+beforeToolCall
+   ↓
+├── deny  → ToolResult(blocked)
+└── allow → execute
+```
+
+它不包含 Durable Approval（持久审批）、经理工作流或 Pending Approval Database（待审批数据库）。
+
+### 5.9 Mini Runtime V1 目录结构
+
+原会话为 Node.js + TypeScript 第一版给出的目录蓝图如下：
+
+```text
+mini-agent-runtime/
+│
+├── src/
+│   ├── core/
+│   │   ├── agent.ts
+│   │   ├── agent-loop.ts
+│   │   ├── state.ts
+│   │   ├── types.ts
+│   │   └── events.ts
+│   │
+│   ├── context/
+│   │   └── context-builder.ts
+│   │
+│   ├── tools/
+│   │   ├── tool.ts
+│   │   ├── registry.ts
+│   │   └── executor.ts
+│   │
+│   ├── session/
+│   │   ├── session.ts
+│   │   └── memory-session-store.ts
+│   │
+│   ├── approval/
+│   │   └── before-tool-call.ts
+│   │
+│   ├── providers/
+│   │   └── model-provider.ts
+│   │
+│   └── index.ts
+│
+├── examples/
+│   └── weather-agent/
+│
+└── tests/
+```
+
+目录并不是为了提前制造很多文件，而是在代码开始前固定职责边界：
+
+| 目录 | 职责 | 明确不负责 |
+| --- | --- | --- |
+| `core/` | Agent Facade、Loop、RuntimeState、公共类型、Event Protocol | 领域 Tool、Session 文件格式、UI |
+| `context/` | RuntimeState → TurnSnapshot | Tool 的真实副作用执行 |
+| `tools/` | Tool Contract、注册、查找、验证与执行 | 业务权限最终裁决 |
+| `session/` | 稳定会话数据与 Store 接口 | 恢复旧 Promise、旧网络连接 |
+| `approval/` | `beforeToolCall` 机制 | Durable Approval Workflow |
+| `providers/` | 隔离不同模型 Provider | Agent Loop 和领域策略 |
+| `examples/` | 端到端验证 Runtime 的使用方式 | Runtime 核心实现 |
+| `tests/` | 按边界验证行为契约 | 只测试 Weather Agent 的表面结果 |
+
+第一阶段暂不增加 `memory/`。Day06 的 Memory（记忆）能力可在 Runtime 主链跑通以后，作为 Plugin / Adapter（插件 / 适配器）加入。
+
+### 5.10 三个必须从第一天守住的代码边界
+
+#### `Agent` 是 Facade，不是上帝对象
+
+```ts
+class Agent {
+  readonly state: RuntimeState;
+
+  constructor(
+    private model: ModelProvider,
+    private toolRegistry: ToolRegistry,
+    private sessionStore: SessionStore,
+  ) {}
+
+  async prompt(message: string) {}
+  abort() {}
+  subscribe(listener: AgentEventListener) {}
+}
+```
+
+`Agent` 负责公共 API 与组件编排；真正的循环由独立的 `runAgentLoop(...)` 承担。
+
+```text
+Public Agent API
+≠
+Loop Implementation
+```
+
+#### Context Builder 从第一天独立
+
+即使 V1 只是复制数组，也不应直接把 `state.messages` 传给模型：
+
+```ts
+class ContextBuilder {
+  build(state: RuntimeState): TurnSnapshot {
+    return {
+      messages: [...state.messages],
+      tools: [...state.tools],
+      systemPrompt: state.systemPrompt,
+      model: state.model,
+    };
+  }
+}
+```
+
+未来的 Memory Retrieval、Compaction、Dynamic Prompt、Tool Projection 与 Token Budget 都应进入 Context Builder / `prepareNextTurn`，而不是污染 Agent Loop。
+
+#### Hard Security Boundary 不进入 Runtime 幻觉
+
+`beforeToolCall` 只是 Agent-level Policy Gate（Agent 层策略门），不能替代 Sandbox、OS Permission 或 Business Authorization。
+
+```text
+Agent Policy
+      ↓
+Tool
+      ↓
+Sandbox / OS / Business Authorization
+```
+
+### 5.11 V1 明确暂缓的能力
 
 ```text
 Session Tree
@@ -1214,7 +1518,7 @@ Extension Generation Management
 
 它们会遮蔽 V1 最需要掌握的 Loop / State / Tool / Context / Event 主线。
 
-### 5.8 推荐的 Part VII 实现顺序
+### 5.12 推荐的 Part VII 实现顺序
 
 ```text
 Part VII-A
@@ -1245,7 +1549,7 @@ Part VII-I
 Weather Agent 跑通完整链路
 ```
 
-### 5.9 Mini Runtime 的核心类型草图
+### 5.13 Mini Runtime 的核心类型草图
 
 ```ts
 interface RuntimeState {
@@ -1273,7 +1577,7 @@ interface SessionStore {
 
 V1 可以先让 Persisted Session（持久会话）保持线性，但类型和职责应避免把磁盘数据、RuntimeState 与 TurnSnapshot 混成一个对象。
 
-### 5.10 Tool Error Contract
+### 5.14 Tool Error Contract
 
 至少区分：
 
@@ -1293,7 +1597,7 @@ Business Failure
 
 Tool Developer（工具开发者）不能只吞掉异常并返回模糊的 `"failed"`，否则 Runtime 无法治理 Retry（重试）、Observation（观察结果）、Metrics（指标）和恢复策略。
 
-### 5.11 Event Consumer 应分级
+### 5.15 Event Consumer 应分级
 
 会话持久化与 UI 动画不应拥有相同可靠性语义：
 
@@ -1310,7 +1614,7 @@ Best-effort Subscriber
 
 需要明确：关键订阅者失败是否阻止下一轮？非关键订阅者是否允许异步、丢弃或降级？
 
-### 5.12 Agent Runtime 的最终公式
+### 5.16 Agent Runtime 的最终公式
 
 ```text
 Agent Runtime

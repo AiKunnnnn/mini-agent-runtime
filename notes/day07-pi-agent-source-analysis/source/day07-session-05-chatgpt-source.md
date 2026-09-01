@@ -412,6 +412,77 @@ beforeToolCall + 简单 Approval Mechanism
 Weather Agent 端到端链路
 ```
 
+会话没有停留在能力清单，而是进一步给出完整的 V1 运行关系图：
+
+```text
+                  Application
+                      │
+                      ↓
+              ┌──────────────┐
+              │ Mini Agent   │
+              └──────┬───────┘
+                     │
+        ┌────────────┼────────────┐
+        ↓            ↓            ↓
+    RuntimeState  ToolRegistry  EventBus
+        │            │            │
+        └────────────┼────────────┘
+                     ↓
+              prepareNextTurn
+                     ↓
+               TurnSnapshot
+                     ↓
+                  LLM
+                     ↓
+              AssistantMessage
+                     ↓
+         ┌───────────┴───────────┐
+         ↓                       ↓
+    Final Answer              ToolCall
+                                 ↓
+                          ToolExecutor
+                                 ↓
+                          ToolResult
+                                 ↓
+                             State
+                                 ↓
+                             Loop
+```
+
+外围由 `SessionStore ← message_end` 保存稳定事实，由 `AbortController` 提供 Cooperative Cancellation（协作式取消）。
+
+Node.js + TypeScript 的建议目录为：
+
+```text
+mini-agent-runtime/
+├── src/
+│   ├── core/
+│   │   ├── agent.ts
+│   │   ├── agent-loop.ts
+│   │   ├── state.ts
+│   │   ├── types.ts
+│   │   └── events.ts
+│   ├── context/
+│   │   └── context-builder.ts
+│   ├── tools/
+│   │   ├── tool.ts
+│   │   ├── registry.ts
+│   │   └── executor.ts
+│   ├── session/
+│   │   ├── session.ts
+│   │   └── memory-session-store.ts
+│   ├── approval/
+│   │   └── before-tool-call.ts
+│   ├── providers/
+│   │   └── model-provider.ts
+│   └── index.ts
+├── examples/
+│   └── weather-agent/
+└── tests/
+```
+
+原会话特别强调：`Agent` 只做 Facade（门面），`runAgentLoop()` 独立；Context Builder 从第一天独立；Approval 第一版只保留机制插槽；`memory/` 暂不加入，等主链完成后再作为 Plugin / Adapter 扩展。
+
 第一版明确暂缓：
 
 ```text

@@ -2,12 +2,14 @@
 
 《从零实现 Agent Runtime》的学习与实现仓库。
 
-这个项目目前处在学习阶段：先按天沉淀 Agent Runtime 的学习笔记，再逐步进入代码实现，最后把学习文档整理成正式书稿。
+这个项目已经进入逐里程碑实现阶段：把 Agent Runtime 学习与源码分析形成的架构认识，逐步转化为可运行的 Node.js + TypeScript 代码。
 
 ## 当前内容
 
 ```text
 mini-agent-runtime/
+├── src/        Mini Agent Runtime 源码
+├── test/       自动化测试
 ├── notes/      每日学习资料
 ├── book/       未来正式书稿
 ├── scripts/    文档导出脚本
@@ -27,7 +29,29 @@ mini-agent-runtime/
 
 当前已进入：
 
-- [Day07 / Part VI：Pi Agent 源码解剖](notes/day07-pi-agent-source-analysis/README.md)
+- Part VII-A：项目骨架、基础类型体系与 OpenAI ModelProvider。
+
+## 运行 Part VII-A
+
+要求 Node.js 20 或更高版本。
+
+```bash
+npm install
+npm run build
+npm test
+```
+
+运行真实 OpenAI Demo：
+
+```bash
+cp .env.example .env
+# 编辑 .env，填写 OPENAI_API_KEY 等配置
+npm run demo
+```
+
+Demo 会通过 `dotenv` 自动加载项目根目录的 `.env`。也可以继续使用终端环境变量；终端中已经存在的变量优先于 `.env`。可通过 `OPENAI_MODEL` 覆盖默认模型 `gpt-4o-mini`，通过 `OPENAI_BASE_URL` 指定可选 API 地址。Demo 不会在缺少 API Key 时回退到 Mock Provider。
+
+`.env` 已被 Git 忽略，不要提交真实 API Key；可提交的配置模板是 `.env.example`。
 
 每一天的学习资料独立放在 `notes/` 下的独立文件夹里。当前学习阶段的新增内容只生成：
 

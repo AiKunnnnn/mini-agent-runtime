@@ -27,9 +27,10 @@ mini-agent-runtime/
 
 完整学习笔记目录见：[notes/README.md](notes/README.md)。
 
-当前已进入：
+当前已完成：
 
-- Part VII-A：项目骨架、基础类型体系与 OpenAI ModelProvider。
+- [Day08 / Part VII：Mini Agent Runtime 工程实现](notes/day08-mini-agent-runtime-implementation/README.md)
+- 当前进度：Part VII-A 已完成，Part VII-B 为下一 Milestone。
 
 ## 运行 Part VII-A
 

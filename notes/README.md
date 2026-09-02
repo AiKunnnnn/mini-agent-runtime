@@ -35,6 +35,7 @@
   - [Day06 Part D：Memory × Context Builder](day06-memory/day06-part-d-memory-context-integration.md)
   - [Day06 Part E：Mini Memory Runtime Implementation](day06-memory/day06-part-e-mini-memory-runtime.md)
 - [Day07 / Part VI：Pi Agent 源码解剖](day07-pi-agent-source-analysis/README.md)
+- [Day08 / Part VII：Mini Agent Runtime 工程实现](day08-mini-agent-runtime-implementation/README.md)
 
 ## 学习路线
 
@@ -67,6 +68,7 @@
 
 ### Part VII：Codex + Mini Agent Runtime
 
+- [Day08：Mini Agent Runtime 工程实现](day08-mini-agent-runtime-implementation/README.md)
 - 架构分析 → Codex 实现 → 运行 → Debug → 补理论 → 总结
 
 ### Part VIII：Agent 项目实战
@@ -191,6 +193,23 @@ notes/
     ├── day06-part-d-memory-context-integration.md
     ├── day06-part-e-mini-memory-runtime.md
     └── source/
+
+└── day07-pi-agent-source-analysis/
+    ├── README.md
+    ├── day07-session-01-architecture-and-runtime-loop.md
+    ├── day07-session-02-state-and-context-projection.md
+    ├── day07-session-03-tool-system-execution-and-observation.md
+    ├── day07-session-04-runtime-control-events-and-human-approval.md
+    ├── day07-session-05-session-reconstruction-dynamic-runtime-and-mini-runtime-extraction.md
+    └── source/
+
+└── day08-mini-agent-runtime-implementation/
+    ├── README.md
+    ├── day08-part-vii-a-foundation-model-provider.md
+    └── source/
+        ├── day08-part-vii-a-architecture-chatgpt-source.md
+        ├── day08-part-vii-a-review-chatgpt-source.md
+        └── day08-part-vii-a-codex-implementation-source.md
 ```
 
 规则：
@@ -199,6 +218,9 @@ notes/
 - 日常学习只新增和维护 Markdown。
 - PDF / DOCX 是派生版本，留到阶段性整理或写书前统一批量生成；目录中已有文件继续保留。
 - 原始资料放在当天目录的 `source/` 中。
+- Day08 工程实现仍按“一个 Day 一个目录”组织；Part VII-A～VII-I 各自使用一个 `day08-part-vii-x-*.md` 主记录。
+- Day08 `README.md` 统一维护全部 Milestone 的规划、完成状态、当前阶段和下一阶段；外层索引只链接 Day08 README，不绕过它直接链接具体 Part。
+- 工程 Milestone 的 `source/` 分别保存架构讨论、Code Review 和 Codex 实现 / 测试 / Debug 证据；源记录不得保存真实 API Key。
 - 后续图示、流程图、代码草稿可以放进当天目录的 `assets/` 或 `examples/`。
 - 如果某一天被拆成多个小节，统一放在当天目录下平铺管理，例如 `day03-01-xxx.md`、`day03-02-xxx.md`。
 - 如果某一天是插入的桥接章节，可以使用 `day04-5-xxx` 这样的目录名保留学习顺序。

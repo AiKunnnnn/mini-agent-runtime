@@ -30,9 +30,9 @@ mini-agent-runtime/
 当前已完成：
 
 - [Day08 / Part VII：Mini Agent Runtime 工程实现](notes/day08-mini-agent-runtime-implementation/README.md)
-- 当前进度：Part VII-A 已完成，Part VII-B 为下一 Milestone。
+- 当前进度：Part VII-A、VII-B 已实现，下一 Milestone 为 Part VII-C。
 
-## 运行 Part VII-A
+## 构建与测试
 
 要求 Node.js 20 或更高版本。
 
@@ -41,6 +41,40 @@ npm install
 npm run build
 npm test
 ```
+
+## Part VII-B：RuntimeState + Agent Loop
+
+`AgentRuntime` 接收已有的 `ModelProvider`，在同一个实例中保留对话：
+
+```ts
+import { AgentRuntime } from "./src/runtime/agent-runtime.ts";
+
+// provider 是一个实现 ModelProvider 接口的实例。
+const runtime = new AgentRuntime(provider);
+const outcome = await runtime.run("Hello");
+await runtime.run("How are you?");
+const history = runtime.getMessages();
+```
+
+每次 `run()` 先记录 `user_input`，通过已有 `toModelMessage()` 将完整历史转为模型消息，调用一次 Provider，再将回答记录为 `model_output`，最后返回 `RunOutcome`：
+
+- `stop` → `{ type: "completed" }`。
+- `tool_calls` / `length` / `unknown` → `{ type: "unsupported", finishReason }`，保留输出并结束本次运行，不自动继续。
+- Provider 异常原样向上传播；已记录的用户输入保留，不制造模型输出。
+
+`getMessages()` 返回包含嵌套 tool arguments 的深拷贝，修改它不会改变内部状态。请求和响应中的可变引用也与内部状态隔离。
+
+当前仅支持顺序调用；工具执行、多步骤循环、并发控制与恢复策略留给后续 Milestone。自动化 Runtime 测试使用 `test/support/` 中的确定性 Mock，不调用真实 API。
+
+配置好下文的 `.env` 后，运行真实 Runtime Demo：
+
+```bash
+npm run demo:runtime
+```
+
+Demo 使用同一个 Runtime 先输入“我叫小明”，再询问“我叫什么名字？”，每轮打印 outcome 和完整历史。正常情况下，两轮均返回 `completed`，最终历史包含四条消息，第二轮回答引用“小明”。若返回 `unsupported`，Demo 打印已保存历史并停止。该命令会调用真实 API。
+
+## 运行 Part VII-A Provider Demo
 
 运行真实 OpenAI Demo：
 

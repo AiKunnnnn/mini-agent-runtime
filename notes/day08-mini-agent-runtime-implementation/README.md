@@ -54,15 +54,17 @@ Milestone Closure
 
 ### Part VII-B：RuntimeState + Agent Loop
 
-- [ ] RuntimeState 最小事实模型
-- [ ] Model → Runtime → 下一轮的最小循环
-- [ ] ModelResponse 写回状态
-- [ ] 明确 Runtime State 的唯一所有者
-- [ ] 明确循环如何推进
-- [ ] 明确 Model Turn 与 Agent Run 的终止条件
-- [ ] MockModelProvider 与确定性循环测试
+- [x] RuntimeState 最小事实模型：仅保存 messages
+- [x] 同一 Runtime 跨 run 保留历史，每次 run 调用一次模型
+- [x] ModelResponse 先写回状态，再解释 finishReason
+- [x] AgentRuntime 是 Runtime State 的唯一 mutation owner
+- [x] 当前 unsupported flow 结束运行，多步骤循环留给 VII-C
+- [x] 区分 Model Turn 的 finishReason 与 RunOutcome
+- [x] MockModelProvider 与确定性 Runtime 测试
 
-状态：**Next**
+状态：**Implemented**（实现与自动化验证完成，待 Review / Closure）
+
+实现入口：[`AgentRuntime`](../../src/runtime/agent-runtime.ts)。`stop` 返回 `completed`；`tool_calls`、`length`、`unknown` 保存输出后返回 `unsupported`；Provider 异常继续向上传播。
 
 ### Part VII-C：Tool Registry + Tool Executor + Error Contract
 
@@ -164,7 +166,7 @@ Final Answer
 
 ```text
 Part VII-A  [Done]     项目骨架 + 类型体系 + ModelProvider
-Part VII-B  [Next]     RuntimeState + Agent Loop
+Part VII-B  [Implemented] RuntimeState + Agent Loop（待 Review / Closure）
 Part VII-C  [Planned]  Tool Registry + Tool Executor + Error Contract
 Part VII-D  [Planned]  ContextBuilder + TurnSnapshot
 Part VII-E  [Planned]  AgentEvent + Subscriber

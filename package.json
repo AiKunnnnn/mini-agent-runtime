@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "tsx --test test/**/*.test.ts",
-    "demo": "tsx src/demo/openai-demo.ts"
+    "demo": "tsx src/demo/openai-demo.ts",
+    "demo:runtime": "tsx src/demo/runtime-demo.ts"
   },
   "engines": {
     "node": ">=20"

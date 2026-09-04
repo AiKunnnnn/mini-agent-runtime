@@ -62,9 +62,21 @@ Milestone Closure
 - [x] 区分 Model Turn 的 finishReason 与 RunOutcome
 - [x] MockModelProvider 与确定性 Runtime 测试
 
-状态：**Implemented**（实现与自动化验证完成，待 Review / Closure）
+状态：**Done**（实现、自动化验证、手工真实 Demo、最新源码 Review 与 Closure 完成）
 
 实现入口：[`AgentRuntime`](../../src/runtime/agent-runtime.ts)。`stop` 返回 `completed`；`tool_calls`、`length`、`unknown` 保存输出后返回 `unsupported`；Provider 异常继续向上传播。
+
+学习记录：
+
+- [Day08 / Part VII-B：RuntimeState + Agent Loop](day08-part-vii-b-runtime-state-agent-loop.md)
+
+源记录：
+
+- [架构讨论与 Implementation Task](source/day08-part-vii-b-architecture-chatgpt-source.md)
+- [Runtime Verification、Code Review 与 Closure](source/day08-part-vii-b-review-chatgpt-source.md)
+- [Codex 实现、测试与 Debug 记录](source/day08-part-vii-b-codex-implementation-source.md)
+
+后续重点：VII-C 回收 unresolved tool call 后再次 run 的语义与参数契约；未来恢复 / 重试设计区分“重试当前 Step”和“新增 run”，避免重复追加用户输入。
 
 ### Part VII-C：Tool Registry + Tool Executor + Error Contract
 
@@ -76,7 +88,7 @@ Milestone Closure
 - [ ] Tool arguments invalid
 - [ ] Tool execution exception
 
-状态：**Planned**
+状态：**Next**
 
 ### Part VII-D：ContextBuilder + TurnSnapshot
 
@@ -166,8 +178,8 @@ Final Answer
 
 ```text
 Part VII-A  [Done]     项目骨架 + 类型体系 + ModelProvider
-Part VII-B  [Implemented] RuntimeState + Agent Loop（待 Review / Closure）
-Part VII-C  [Planned]  Tool Registry + Tool Executor + Error Contract
+Part VII-B  [Done]     RuntimeState + Agent Loop
+Part VII-C  [Next]     Tool Registry + Tool Executor + Error Contract
 Part VII-D  [Planned]  ContextBuilder + TurnSnapshot
 Part VII-E  [Planned]  AgentEvent + Subscriber
 Part VII-F  [Planned]  Abort + Single Active Run

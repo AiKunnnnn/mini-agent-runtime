@@ -30,7 +30,7 @@ mini-agent-runtime/
 当前已完成：
 
 - [Day08 / Part VII：Mini Agent Runtime 工程实现](notes/day08-mini-agent-runtime-implementation/README.md)
-- 当前进度：Part VII-A、VII-B 已实现，下一 Milestone 为 Part VII-C。
+- 当前进度：Part VII-A、VII-B 已完成并归档，下一 Milestone 为 Part VII-C。
 
 ## 构建与测试
 

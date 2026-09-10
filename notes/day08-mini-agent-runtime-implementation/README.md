@@ -64,7 +64,7 @@ Milestone Closure
 
 状态：**Done**（实现、自动化验证、手工真实 Demo、最新源码 Review 与 Closure 完成）
 
-实现入口：[`AgentRuntime`](../../src/runtime/agent-runtime.ts)。`stop` 返回 `completed`；`tool_calls`、`length`、`unknown` 保存输出后返回 `unsupported`；Provider 异常继续向上传播。
+VII-B 收尾时的行为：`stop` 返回 `completed`；`tool_calls`、`length`、`unknown` 保存输出后返回 `unsupported`；Provider 异常继续向上传播。当前 [`AgentRuntime`](../../src/runtime/agent-runtime.ts) 已增量演进为下述 VII-C Tool Loop，VII-B 笔记保留历史设计。
 
 学习记录：
 
@@ -76,19 +76,34 @@ Milestone Closure
 - [Runtime Verification、Code Review 与 Closure](source/day08-part-vii-b-review-chatgpt-source.md)
 - [Codex 实现、测试与 Debug 记录](source/day08-part-vii-b-codex-implementation-source.md)
 
-后续重点：VII-C 回收 unresolved tool call 后再次 run 的语义与参数契约；未来恢复 / 重试设计区分“重试当前 Step”和“新增 run”，避免重复追加用户输入。
+VII-B 留给 VII-C 的 unresolved tool call 与参数契约已在当前正常工具流和 maxTurns 终止场景回收；Provider 失败后的“重试当前 Step”与“新增 run”仍需在真实恢复／重试需求出现时区分。
 
 ### Part VII-C：Tool Registry + Tool Executor + Error Contract
 
-- [ ] Tool 注册与查找
-- [ ] 参数处理与 Schema Validation
-- [ ] Tool 执行与结果回流
-- [ ] Tool Error Contract
-- [ ] Tool not found
-- [ ] Tool arguments invalid
-- [ ] Tool execution exception
+- [x] Tool 注册与查找，definitions 唯一来源
+- [x] unknown 参数与单一 JSON Schema Validation
+- [x] Tool 执行与结果回流，同一 run 内 Model → Tool → Model
+- [x] Tool Error Contract：失败回流，Provider／Runtime 异常传播
+- [x] Tool not found
+- [x] Tool arguments invalid
+- [x] Tool execution exception
+- [x] Multiple Tool Calls 顺序执行与混合成功／失败
+- [x] maxTurns 默认 5，限制 Model Turn
+- [x] 末轮不执行工具，逐个写 skipped 结果后 limit_reached
+- [x] malformed tool_calls 不变量检查先于预算判断
+- [x] 45 项测试、build、测试类型检查、确定性 Tool Demo、Review 与 Closure
 
-状态：**Next**
+状态：**Done**（主体实现与两项 termination Fix 已通过最终 Review；本轮 Demo 不调用真实 LLM）
+
+学习记录：
+
+- [Day08 / Part VII-C：Tool Registry + Tool Executor + Error Contract](day08-part-vii-c-tool-registry-executor-error-contract.md)
+
+源记录：
+
+- [架构讨论与 Implementation Task（第 1～9 轮）](source/day08-part-vii-c-architecture-chatgpt-source.md)
+- [交付、Code Review 与 Closure（第 10～16 轮）](source/day08-part-vii-c-review-chatgpt-source.md)
+- [Codex 实现、测试与 Debug 证据](source/day08-part-vii-c-codex-implementation-source.md)
 
 ### Part VII-D：ContextBuilder + TurnSnapshot
 
@@ -98,7 +113,7 @@ Milestone Closure
 - [ ] 每轮基于当前 State 构建不可变调用快照
 - [ ] 禁止直接把完整 RuntimeState 喂给模型
 
-状态：**Planned**
+状态：**Next**（下一步先做 Architecture Analysis，尚未实现）
 
 ### Part VII-E：AgentEvent + Subscriber
 
@@ -179,8 +194,8 @@ Final Answer
 ```text
 Part VII-A  [Done]     项目骨架 + 类型体系 + ModelProvider
 Part VII-B  [Done]     RuntimeState + Agent Loop
-Part VII-C  [Next]     Tool Registry + Tool Executor + Error Contract
-Part VII-D  [Planned]  ContextBuilder + TurnSnapshot
+Part VII-C  [Done]     Tool Registry + Tool Executor + Error Contract
+Part VII-D  [Next]     ContextBuilder + TurnSnapshot
 Part VII-E  [Planned]  AgentEvent + Subscriber
 Part VII-F  [Planned]  Abort + Single Active Run
 Part VII-G  [Planned]  SessionStore + Conversation Recovery

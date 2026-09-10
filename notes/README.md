@@ -207,13 +207,17 @@ notes/
     ├── README.md
     ├── day08-part-vii-a-foundation-model-provider.md
     ├── day08-part-vii-b-runtime-state-agent-loop.md
+    ├── day08-part-vii-c-tool-registry-executor-error-contract.md
     └── source/
         ├── day08-part-vii-a-architecture-chatgpt-source.md
         ├── day08-part-vii-a-review-chatgpt-source.md
         ├── day08-part-vii-a-codex-implementation-source.md
         ├── day08-part-vii-b-architecture-chatgpt-source.md
         ├── day08-part-vii-b-review-chatgpt-source.md
-        └── day08-part-vii-b-codex-implementation-source.md
+        ├── day08-part-vii-b-codex-implementation-source.md
+        ├── day08-part-vii-c-architecture-chatgpt-source.md
+        ├── day08-part-vii-c-review-chatgpt-source.md
+        └── day08-part-vii-c-codex-implementation-source.md
 ```
 
 规则：

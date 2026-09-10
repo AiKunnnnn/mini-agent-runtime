@@ -30,7 +30,7 @@ mini-agent-runtime/
 当前已完成：
 
 - [Day08 / Part VII：Mini Agent Runtime 工程实现](notes/day08-mini-agent-runtime-implementation/README.md)
-- 当前进度：Part VII-A、VII-B 已完成并归档；VII-C Tool Registry、Executor 和 Tool Loop 已实现。
+- 当前进度：Part VII-A～VII-C 已完成并归档；下一 Milestone 为 VII-D：ContextBuilder + TurnSnapshot。
 
 ## 构建与测试
 

@@ -7,12 +7,14 @@
     "build": "tsc -p tsconfig.json",
     "test": "tsx --test test/**/*.test.ts",
     "demo": "tsx src/demo/openai-demo.ts",
-    "demo:runtime": "tsx src/demo/runtime-demo.ts"
+    "demo:runtime": "tsx src/demo/runtime-demo.ts",
+    "demo:tools": "tsx src/demo/tool-runtime-demo.ts"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
+    "ajv": "^8.20.0",
     "dotenv": "^17.4.2",
     "openai": "^5.0.0"
   },

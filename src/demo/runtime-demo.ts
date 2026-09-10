@@ -22,7 +22,7 @@ for (const input of ["我叫小明，请简短回复。", "我叫什么名字？
   const outcome = await runtime.run(input);
   console.log("RunOutcome:", JSON.stringify(outcome, null, 2));
   console.log("Runtime history:", JSON.stringify(runtime.getMessages(), null, 2));
-  if (outcome.type === "unsupported") {
+  if (outcome.type !== "completed") {
     console.log("当前运行无法继续，Demo 在此结束。");
     break;
   }

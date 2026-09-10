@@ -49,24 +49,30 @@ test("retains conversation across two runs on the same runtime", async () => {
   ]);
 });
 
-test("records tool calls before ending as unsupported without executing or continuing", async () => {
+test("records missing tool failure and continues within the same run", async () => {
   const toolCalls = [
     { id: "call_weather", name: "get_weather", arguments: { city: "Shanghai" } },
   ];
   const provider = new MockModelProvider([
     { message: { role: "assistant", toolCalls }, finishReason: "tool_calls" },
+    { message: { role: "assistant", content: "Unavailable" }, finishReason: "stop" },
   ]);
   const runtime = new AgentRuntime(provider);
 
-  assert.deepEqual(await runtime.run("Weather?"), {
-    type: "unsupported",
-    finishReason: "tool_calls",
-  });
-  assert.equal(provider.requests.length, 1);
-  assert.deepEqual(runtime.getMessages(), [
+  assert.deepEqual(await runtime.run("Weather?"), { type: "completed" });
+  assert.equal(provider.requests.length, 2);
+  const history = runtime.getMessages();
+  assert.deepEqual(history.slice(0, 2), [
     { type: "user_input", content: "Weather?" },
     { type: "model_output", toolCalls },
   ]);
+  const result = history[2];
+  assert.ok(result?.type === "tool_result");
+  assert.equal(result.toolCallId, "call_weather");
+  assert.equal(JSON.parse(result.content).error.code, "TOOL_NOT_FOUND");
+  assert.deepEqual(provider.requests[1]?.messages[2], {
+    role: "tool", toolCallId: result.toolCallId, content: result.content,
+  });
 });
 
 for (const finishReason of ["length", "unknown"] as const) {
@@ -119,6 +125,7 @@ test("history copies protect the array, messages, tool calls and nested argument
       },
       finishReason: "tool_calls",
     },
+    { message: { role: "assistant", content: "Done" }, finishReason: "stop" },
   ]);
   const runtime = new AgentRuntime(provider);
   await runtime.run("Weather?");
@@ -153,6 +160,7 @@ test("provider response and request references cannot mutate runtime facts", asy
   };
   const provider = new MockModelProvider([
     response,
+    { message: { role: "assistant", content: "Done" }, finishReason: "stop" },
     { message: { role: "assistant", content: "Hi" }, finishReason: "stop" },
   ]);
   const runtime = new AgentRuntime(provider);
@@ -163,7 +171,7 @@ test("provider response and request references cannot mutate runtime facts", asy
   (responseCall.arguments as { city: string }).city = "Changed response";
   assert.deepEqual(runtime.getMessages(), expected);
 
-  // An explicit second run only checks reference ownership, not tool recovery.
+  // An explicit second run continues checking reference ownership.
   await runtime.run("Hello");
   const afterSecondRun = runtime.getMessages();
   const request = provider.requests[1];

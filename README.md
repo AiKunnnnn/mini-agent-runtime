@@ -30,7 +30,7 @@ mini-agent-runtime/
 当前已完成：
 
 - [Day08 / Part VII：Mini Agent Runtime 工程实现](notes/day08-mini-agent-runtime-implementation/README.md)
-- 当前进度：Part VII-A、VII-B 已完成并归档，下一 Milestone 为 Part VII-C。
+- 当前进度：Part VII-A、VII-B 已完成并归档；VII-C Tool Registry、Executor 和 Tool Loop 已实现。
 
 ## 构建与测试
 
@@ -42,7 +42,7 @@ npm run build
 npm test
 ```
 
-## Part VII-B：RuntimeState + Agent Loop
+## Part VII-C：Tool Registry + Tool Executor + Tool Loop
 
 `AgentRuntime` 接收已有的 `ModelProvider`，在同一个实例中保留对话：
 
@@ -56,15 +56,31 @@ await runtime.run("How are you?");
 const history = runtime.getMessages();
 ```
 
-每次 `run()` 先记录 `user_input`，通过已有 `toModelMessage()` 将完整历史转为模型消息，调用一次 Provider，再将回答记录为 `model_output`，最后返回 `RunOutcome`：
+每次 `run()` 只记录一次 `user_input`，通过已有 `toModelMessage()` 将完整历史转为模型消息，每次 Provider 回答先记录为 `model_output`：
 
 - `stop` → `{ type: "completed" }`。
-- `tool_calls` / `length` / `unknown` → `{ type: "unsupported", finishReason }`，保留输出并结束本次运行，不自动继续。
+- `tool_calls` → 顺序执行所有工具，逐个保存 `tool_result`，在同一次 run 内继续调用 Model。
+- `length` / `unknown` → `{ type: "unsupported", finishReason }`，保留输出并结束本次运行。
+- 最后允许的 Model Turn 返回 `tool_calls` → 保存输出，不执行该批工具，返回 `{ type: "limit_reached", maxTurns }`。
 - Provider 异常原样向上传播；已记录的用户输入保留，不制造模型输出。
 
 `getMessages()` 返回包含嵌套 tool arguments 的深拷贝，修改它不会改变内部状态。请求和响应中的可变引用也与内部状态隔离。
 
-当前仅支持顺序调用；工具执行、多步骤循环、并发控制与恢复策略留给后续 Milestone。自动化 Runtime 测试使用 `test/support/` 中的确定性 Mock，不调用真实 API。
+通过 `new AgentRuntime(provider, { registry, maxTurns: 5 })` 配置工具与回合上限。`registry` 是 `ToolRegistry`，提供 `register(tool)`、`get(name)` 和 `listDefinitions()`；名称重复注册直接抛错。未传入时使用空 Registry，空工具请求省略 `tools`。`maxTurns` 默认为 5，必须为正安全整数，每次 run 重新计数；一次 generate 算一个 Turn，与该次工具数量无关。State 仍然只有 messages。
+
+可执行 `Tool<TArgs>` 包含 `definition` 和 `execute(args)`；Tool 作者负责让 `definition.parameters` 描述 TArgs。Executor 使用同一份 JSON Schema，通过 Ajv（draft-07、严格模式、同步校验）校验 unknown 输入，不进行类型转换、补默认值或删除额外字段。Registry 保存 Schema 副本，对外返回副本，防止 Provider 或调用方更改执行规则。Executor 按名称缓存已编译校验器。
+
+工具返回 JSON 兼容值。既有 `RuntimeToolMessage.content` 保存 JSON：成功为 `{ success: true, result }`；失败为 `{ success: false, error: { code, message } }`，通过 `toolCallId` 对应之前记录的调用，工具名从该调用读取。错误码为 `TOOL_NOT_FOUND`、`INVALID_ARGUMENTS` 和 `TOOL_EXECUTION_FAILED`，均回流给模型。只有 execute 调用边界内的异常被规范化；无效 Schema、内部不变量或结果序列化错误继续抛出。无需修改 Provider Adapter 或消息类型。
+
+确定性 Tool Loop Demo（不访问网络，不调用真实 LLM）：
+
+```bash
+npm run demo:tools
+```
+
+Demo Provider 第一回合请求 add(2, 3)，第二回合读取 Runtime 实际写回的 Tool Result 并据此生成回答。自动化测试独立验证成功、失败、顺序执行、预算及引用隔离。
+
+当前仅支持顺序调用；并发控制与恢复策略没有实现。达到上限后保留的最后一批 Tool Call 没有结果；再次 run 会携带这段历史，严格要求调用与结果配对的 Provider 可能拒绝请求。本 Milestone 不修补历史或实现恢复。
 
 配置好下文的 `.env` 后，运行真实 Runtime Demo：
 
@@ -72,7 +88,7 @@ const history = runtime.getMessages();
 npm run demo:runtime
 ```
 
-Demo 使用同一个 Runtime 先输入“我叫小明”，再询问“我叫什么名字？”，每轮打印 outcome 和完整历史。正常情况下，两轮均返回 `completed`，最终历史包含四条消息，第二轮回答引用“小明”。若返回 `unsupported`，Demo 打印已保存历史并停止。该命令会调用真实 API。
+Demo 使用同一个 Runtime 先输入“我叫小明”，再询问“我叫什么名字？”，每轮打印 outcome 和完整历史。正常情况下，两轮均返回 `completed`，最终历史包含四条消息，第二轮回答引用“小明”。若未返回 `completed`，Demo 打印已保存历史并停止。该命令会调用真实 API。
 
 ## 运行 Part VII-A Provider Demo
 

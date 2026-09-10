@@ -9,7 +9,7 @@ export interface Tool<TArgs = unknown> {
 }
 
 export interface ToolError {
-  code: "TOOL_NOT_FOUND" | "INVALID_ARGUMENTS" | "TOOL_EXECUTION_FAILED";
+  code: "TOOL_NOT_FOUND" | "INVALID_ARGUMENTS" | "TOOL_EXECUTION_FAILED" | "TOOL_EXECUTION_SKIPPED";
   message: string;
 }
 

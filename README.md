@@ -61,7 +61,7 @@ const history = runtime.getMessages();
 - `stop` → `{ type: "completed" }`。
 - `tool_calls` → 顺序执行所有工具，逐个保存 `tool_result`，在同一次 run 内继续调用 Model。
 - `length` / `unknown` → `{ type: "unsupported", finishReason }`，保留输出并结束本次运行。
-- 最后允许的 Model Turn 返回 `tool_calls` → 保存输出，不执行该批工具，返回 `{ type: "limit_reached", maxTurns }`。
+- 最后允许的 Model Turn 返回 `tool_calls` → 保存输出，先验证调用存在且非空；不执行该批工具，为每个调用写入 `TOOL_EXECUTION_SKIPPED` 结果，再返回 `{ type: "limit_reached", maxTurns }`。
 - Provider 异常原样向上传播；已记录的用户输入保留，不制造模型输出。
 
 `getMessages()` 返回包含嵌套 tool arguments 的深拷贝，修改它不会改变内部状态。请求和响应中的可变引用也与内部状态隔离。
@@ -80,7 +80,7 @@ npm run demo:tools
 
 Demo Provider 第一回合请求 add(2, 3)，第二回合读取 Runtime 实际写回的 Tool Result 并据此生成回答。自动化测试独立验证成功、失败、顺序执行、预算及引用隔离。
 
-当前仅支持顺序调用；并发控制与恢复策略没有实现。达到上限后保留的最后一批 Tool Call 没有结果；再次 run 会携带这段历史，严格要求调用与结果配对的 Provider 可能拒绝请求。本 Milestone 不修补历史或实现恢复。
+当前仅支持顺序调用；并发控制与恢复策略没有实现。达到上限时，Runtime 为最后一批未执行调用逐个写入失败结果，错误码为 `TOOL_EXECUTION_SKIPPED`，message 为 `Tool execution was skipped because maxTurns was reached.`。正常返回 `limit_reached` 后，调用与结果保持配对，后续 run 的请求会在这些结果之后追加新的用户输入。
 
 配置好下文的 `.env` 后，运行真实 Runtime Demo：
 

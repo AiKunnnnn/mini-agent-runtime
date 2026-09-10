@@ -129,11 +129,47 @@ for (const maxTurns of [1, 3, undefined]) {
       assert.deepEqual(await runtime.run("loop"), { type: "limit_reached", maxTurns: budget });
       assert.equal(turns, run * budget);
       assert.equal(executions, run * (budget - 1) * 2);
-      assert.equal(runtime.getMessages().at(-1)?.type, "model_output");
+      assert.deepEqual(runtime.getMessages().slice(-3), [
+        { type: "model_output", toolCalls: [call("A"), call("B")] },
+        ...["A", "B"].map((toolCallId) => ({
+          type: "tool_result", toolCallId,
+          content: JSON.stringify({ success: false, error: {
+            code: "TOOL_EXECUTION_SKIPPED",
+            message: "Tool execution was skipped because maxTurns was reached.",
+          } }),
+        })),
+      ]);
       assert.equal(runtime.getMessages().filter((m) => m.type === "user_input").length, run);
     }
   });
 }
+
+test("a run after limit_reached receives paired skipped results before the new user input", async () => {
+  const registry = new ToolRegistry();
+  let executions = 0;
+  registry.register(add(() => ++executions));
+  const calls = [call("A"), call("B")];
+  const provider = new MockModelProvider([calling(...calls), final]);
+  const runtime = new AgentRuntime(provider, { registry, maxTurns: 1 });
+
+  assert.deepEqual(await runtime.run("add"), { type: "limit_reached", maxTurns: 1 });
+  assert.equal(executions, 0);
+  assert.deepEqual(await runtime.run("continue"), { type: "completed" });
+  assert.equal(executions, 0);
+  assert.equal(provider.requests.length, 2);
+  assert.deepEqual(provider.requests[1]?.messages, [
+    { role: "user", content: "add" },
+    { role: "assistant", toolCalls: calls },
+    ...calls.map(({ id }) => ({
+      role: "tool", toolCallId: id,
+      content: JSON.stringify({ success: false, error: {
+        code: "TOOL_EXECUTION_SKIPPED",
+        message: "Tool execution was skipped because maxTurns was reached.",
+      } }),
+    })),
+    { role: "user", content: "continue" },
+  ]);
+});
 
 test("stop on the last allowed turn still completes", async () => {
   assert.deepEqual(await new AgentRuntime(new MockModelProvider([final]), { maxTurns: 1 }).run("hi"), { type: "completed" });
@@ -243,3 +279,17 @@ test("tool_calls without calls is an invariant violation", async () => {
   await assert.rejects(runtime.run("add"), /requires at least one ToolCall/);
   assert.equal(runtime.getMessages().at(-1)?.type, "model_output");
 });
+
+for (const toolCalls of [undefined, []] as const) {
+  test(`malformed tool_calls (${toolCalls === undefined ? "missing" : "empty"}) still throws on the final turn`, async () => {
+    const provider = new MockModelProvider([{
+      message: { role: "assistant", ...(toolCalls === undefined ? {} : { toolCalls: [] }) },
+      finishReason: "tool_calls",
+    }]);
+    const runtime = new AgentRuntime(provider, { maxTurns: 1 });
+    await assert.rejects(runtime.run("add"), /requires at least one ToolCall/);
+    assert.equal(provider.requests.length, 1);
+    assert.equal(runtime.getMessages().at(-1)?.type, "model_output");
+    assert.deepEqual(results(runtime), []);
+  });
+}

@@ -5,6 +5,7 @@ import type { FinishReason, ModelRequest } from "../model/model.ts";
 import type { RuntimeState } from "./runtime-state.ts";
 import { ToolRegistry } from "../tools/tool-registry.ts";
 import { ToolExecutor } from "../tools/tool-executor.ts";
+import type { ToolResult } from "../tools/tool.ts";
 
 export type RunOutcome =
   | { type: "completed" }
@@ -65,11 +66,23 @@ export class AgentRuntime {
         case "stop":
           return { type: "completed" };
         case "tool_calls":
-          if (currentTurn === this.#maxTurns) {
-            return { type: "limit_reached", maxTurns: this.#maxTurns };
-          }
           if (output.toolCalls === undefined || output.toolCalls.length === 0) {
             throw new Error("tool_calls finish reason requires at least one ToolCall.");
+          }
+          if (currentTurn === this.#maxTurns) {
+            const skipped: ToolResult = {
+              success: false,
+              error: {
+                code: "TOOL_EXECUTION_SKIPPED",
+                message: "Tool execution was skipped because maxTurns was reached.",
+              },
+            };
+            for (const call of output.toolCalls) {
+              this.#state.messages.push({
+                type: "tool_result", toolCallId: call.id, content: JSON.stringify(skipped),
+              });
+            }
+            return { type: "limit_reached", maxTurns: this.#maxTurns };
           }
           for (const call of output.toolCalls) {
             const result = await this.#executor.execute(call);

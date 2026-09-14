@@ -107,13 +107,25 @@ VII-B 留给 VII-C 的 unresolved tool call 与参数契约已在当前正常工
 
 ### Part VII-D：ContextBuilder + TurnSnapshot
 
-- [ ] Runtime State 与 LLM Context 解耦
-- [ ] ContextBuilder
-- [ ] TurnSnapshot
-- [ ] 每轮基于当前 State 构建不可变调用快照
-- [ ] 禁止直接把完整 RuntimeState 喂给模型
+- [x] Runtime State 与 Model Context 解耦，State 保持 messages-only
+- [x] 无状态 ContextBuilder，显式接收 messages + tool definitions
+- [x] TurnSnapshot 同时覆盖 messages 与 optional tools
+- [x] 每个 Model Turn 基于最新事实构建独立 Snapshot
+- [x] Reference Isolation，不引入 deepFreeze 或不可变框架
+- [x] 保留 ModelRequest Provider Contract 与 VII-C 全部行为
+- [x] 50 项测试、build、测试类型检查与确定性 Tool Demo
 
-状态：**Next**（下一步先做 Architecture Analysis，尚未实现）
+状态：**Done**（六条 D-AD 已落实，最终 Review 无 Must Fix；没有实现裁剪、Token、Summary 或 Memory）
+
+学习记录：
+
+- [Day08 / Part VII-D：ContextBuilder + TurnSnapshot](day08-part-vii-d-context-builder-turn-snapshot.md)
+
+源记录：
+
+- [架构讨论与 Implementation Task（第 1～7 轮）](source/day08-part-vii-d-architecture-chatgpt-source.md)
+- [交付、Code Review 与 Closure（第 8～9 轮）](source/day08-part-vii-d-review-chatgpt-source.md)
+- [Codex 实现、测试与 Debug 证据](source/day08-part-vii-d-codex-implementation-source.md)
 
 ### Part VII-E：AgentEvent + Subscriber
 
@@ -123,7 +135,7 @@ VII-B 留给 VII-C 的 unresolved tool call 与参数契约已在当前正常工
 - [ ] 支持 Logger / Observability 消费事件
 - [ ] Streaming 如在 v1 实现，只能在本 Milestone 结合 Event / Subscriber 设计，不单独扩展新 Part
 
-状态：**Planned**
+状态：**Next**（先进入 Architecture Analysis，尚未实现）
 
 ### Part VII-F：Abort + Single Active Run
 
@@ -195,8 +207,8 @@ Final Answer
 Part VII-A  [Done]     项目骨架 + 类型体系 + ModelProvider
 Part VII-B  [Done]     RuntimeState + Agent Loop
 Part VII-C  [Done]     Tool Registry + Tool Executor + Error Contract
-Part VII-D  [Next]     ContextBuilder + TurnSnapshot
-Part VII-E  [Planned]  AgentEvent + Subscriber
+Part VII-D  [Done]     ContextBuilder + TurnSnapshot
+Part VII-E  [Next]     AgentEvent + Subscriber
 Part VII-F  [Planned]  Abort + Single Active Run
 Part VII-G  [Planned]  SessionStore + Conversation Recovery
 Part VII-H  [Planned]  beforeToolCall + 简单 Approval

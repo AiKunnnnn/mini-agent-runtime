@@ -1,8 +1,8 @@
 import type { RuntimeAssistantMessage, RuntimeMessage } from "../messages/runtime-message.ts";
-import { toModelMessage } from "../messages/to-model-message.ts";
 import type { ModelProvider } from "../model/model-provider.ts";
 import type { FinishReason, ModelRequest } from "../model/model.ts";
 import type { RuntimeState } from "./runtime-state.ts";
+import { ContextBuilder } from "./context-builder.ts";
 import { ToolRegistry } from "../tools/tool-registry.ts";
 import { ToolExecutor } from "../tools/tool-executor.ts";
 import type { ToolResult } from "../tools/tool.ts";
@@ -20,6 +20,7 @@ export interface AgentRuntimeOptions {
 export class AgentRuntime {
   readonly #provider: ModelProvider;
   readonly #state: RuntimeState = { messages: [] };
+  readonly #contextBuilder = new ContextBuilder();
   readonly #registry: ToolRegistry;
   readonly #executor: ToolExecutor;
   readonly #maxTurns: number;
@@ -43,12 +44,11 @@ export class AgentRuntime {
     this.#state.messages.push({ type: "user_input", content: userInput });
 
     for (let currentTurn = 1; currentTurn <= this.#maxTurns; currentTurn += 1) {
-      // The provider receives a model view without mutable references to state.
-      const definitions = this.#registry.listDefinitions();
-      const request: ModelRequest = {
-        messages: this.getMessages().map(toModelMessage),
-        ...(definitions.length === 0 ? {} : { tools: definitions }),
-      };
+      const snapshot = this.#contextBuilder.build({
+        messages: this.#state.messages,
+        tools: this.#registry.listDefinitions(),
+      });
+      const request: ModelRequest = snapshot;
       const response = await this.#provider.generate(request);
       const message = response.message;
       const output: RuntimeAssistantMessage = {

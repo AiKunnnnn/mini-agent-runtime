@@ -48,6 +48,40 @@ test("happy path uses registry definitions and result in the second turn of one 
   });
 });
 
+test("each turn gets independent complete context from the latest facts and definitions", async () => {
+  const registry = new ToolRegistry();
+  registry.register(add(() => {
+    registry.register({
+      definition: { name: "second", description: "Added during execution", parameters: { type: "object" } },
+      execute: () => "Done",
+    });
+    return 5;
+  }));
+  const initialDefinitions = registry.listDefinitions();
+  const provider = new MockModelProvider([calling(call()), final]);
+  const runtime = new AgentRuntime(provider, { registry });
+  assert.deepEqual(await runtime.run("add"), { type: "completed" });
+  const first = provider.requests[0];
+  const second = provider.requests[1];
+  assert.ok(first && second);
+  assert.deepEqual(first, {
+    messages: [{ role: "user", content: "add" }], tools: initialDefinitions,
+  });
+  assert.deepEqual(second, {
+    messages: [
+      { role: "user", content: "add" },
+      { role: "assistant", toolCalls: [call()] },
+      { role: "tool", toolCallId: "one", content: '{"success":true,"result":5}' },
+    ],
+    tools: registry.listDefinitions(),
+  });
+  const expectedSecond = structuredClone(second);
+  first.messages[0]!.content = "Changed old snapshot";
+  first.tools![0]!.parameters.required = [];
+  assert.deepEqual(second, expectedSecond);
+  assert.deepEqual(runtime.getMessages()[0], { type: "user_input", content: "add" });
+});
+
 for (const args of [null, [], "bad", { a: "2", b: 3 }, { a: 2 }, { a: 2, b: 3, extra: true }]) {
   test(`invalid arguments ${JSON.stringify(args)} never invoke execute and allow continuation`, async () => {
     const registry = new ToolRegistry();

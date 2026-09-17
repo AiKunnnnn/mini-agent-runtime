@@ -1,6 +1,11 @@
-import type { RuntimeAssistantMessage, RuntimeMessage } from "../messages/runtime-message.ts";
+import type {
+  RuntimeAssistantMessage,
+  RuntimeMessage,
+  RuntimeToolMessage,
+} from "../messages/runtime-message.ts";
 import type { ModelProvider } from "../model/model-provider.ts";
 import type { FinishReason, ModelRequest } from "../model/model.ts";
+import type { AgentEvent, AgentEventSubscriber } from "./agent-event.ts";
 import type { RuntimeState } from "./runtime-state.ts";
 import { ContextBuilder } from "./context-builder.ts";
 import { ToolRegistry } from "../tools/tool-registry.ts";
@@ -24,6 +29,7 @@ export class AgentRuntime {
   readonly #registry: ToolRegistry;
   readonly #executor: ToolExecutor;
   readonly #maxTurns: number;
+  readonly #subscribers = new Set<AgentEventSubscriber>();
 
   constructor(provider: ModelProvider, options: AgentRuntimeOptions = {}) {
     this.#provider = provider;
@@ -40,8 +46,31 @@ export class AgentRuntime {
     return structuredClone(this.#state.messages);
   }
 
+  subscribe(subscriber: AgentEventSubscriber): () => void {
+    this.#subscribers.add(subscriber);
+    return () => {
+      this.#subscribers.delete(subscriber);
+    };
+  }
+
+  #emit(event: AgentEvent): void {
+    for (const subscriber of [...this.#subscribers]) {
+      try {
+        subscriber(structuredClone(event));
+      } catch {
+        // Observation failures do not affect runtime execution or other subscribers.
+      }
+    }
+  }
+
+  #finish(outcome: RunOutcome): RunOutcome {
+    this.#emit({ type: "run_finished", outcome });
+    return outcome;
+  }
+
   async run(userInput: string): Promise<RunOutcome> {
     this.#state.messages.push({ type: "user_input", content: userInput });
+    this.#emit({ type: "run_started" });
 
     for (let currentTurn = 1; currentTurn <= this.#maxTurns; currentTurn += 1) {
       const snapshot = this.#contextBuilder.build({
@@ -49,6 +78,7 @@ export class AgentRuntime {
         tools: this.#registry.listDefinitions(),
       });
       const request: ModelRequest = snapshot;
+      this.#emit({ type: "model_turn_started" });
       const response = await this.#provider.generate(request);
       const message = response.message;
       const output: RuntimeAssistantMessage = {
@@ -61,10 +91,11 @@ export class AgentRuntime {
 
       // A successful model output is a fact even when this run cannot continue.
       this.#state.messages.push(output);
+      this.#emit({ type: "model_turn_completed", message: output });
 
       switch (response.finishReason) {
         case "stop":
-          return { type: "completed" };
+          return this.#finish({ type: "completed" });
         case "tool_calls":
           if (output.toolCalls === undefined || output.toolCalls.length === 0) {
             throw new Error("tool_calls finish reason requires at least one ToolCall.");
@@ -82,18 +113,21 @@ export class AgentRuntime {
                 type: "tool_result", toolCallId: call.id, content: JSON.stringify(skipped),
               });
             }
-            return { type: "limit_reached", maxTurns: this.#maxTurns };
+            return this.#finish({ type: "limit_reached", maxTurns: this.#maxTurns });
           }
           for (const call of output.toolCalls) {
+            this.#emit({ type: "tool_execution_started", toolCall: call });
             const result = await this.#executor.execute(call);
-            this.#state.messages.push({
+            const toolMessage: RuntimeToolMessage = {
               type: "tool_result", toolCallId: call.id, content: JSON.stringify(result),
-            });
+            };
+            this.#state.messages.push(toolMessage);
+            this.#emit({ type: "tool_execution_completed", message: toolMessage });
           }
           break;
         case "length":
         case "unknown":
-          return { type: "unsupported", finishReason: response.finishReason };
+          return this.#finish({ type: "unsupported", finishReason: response.finishReason });
       }
     }
     throw new Error("AgentRuntime exhausted turns without returning an outcome.");

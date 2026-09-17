@@ -129,13 +129,25 @@ VII-B 留给 VII-C 的 unresolved tool call 与参数契约已在当前正常工
 
 ### Part VII-E：AgentEvent + Subscriber
 
-- [ ] Runtime Event Model
-- [ ] Subscriber
-- [ ] 将内部执行过程暴露给上层 UI
-- [ ] 支持 Logger / Observability 消费事件
-- [ ] Streaming 如在 v1 实现，只能在本 Milestone 结合 Event / Subscriber 设计，不单独扩展新 Part
+- [x] Runtime-level Event Model：Run / Model Turn / Tool Execution
+- [x] 同步 Subscriber 与幂等 unsubscribe
+- [x] completed event 在对应 Runtime fact commit 后发出
+- [x] Subscriber failure isolation 与逐 Subscriber payload reference isolation
+- [x] maxTurns skipped、Tool Error、Provider Error 的事件边界
+- [x] TypeScript contract 拒绝 async Subscriber
+- [x] 60 项测试、build、严格测试类型检查与 deterministic demos
 
-状态：**Next**（先进入 Architecture Analysis，尚未实现）
+状态：**Done**（E-AD01～E-AD07 已落实；最终 Review 的同步 Subscriber Must Fix 已修复；未实现 Streaming、Abort、Approval 或复杂 EventBus）
+
+学习记录：
+
+- [Day08 / Part VII-E：AgentEvent + Subscriber](day08-part-vii-e-agent-event-subscriber.md)
+
+源记录：
+
+- [架构讨论与 Implementation Task](source/day08-part-vii-e-architecture-chatgpt-source.md)
+- [交付、Code Review 与 Closure](source/day08-part-vii-e-review-chatgpt-source.md)
+- [Codex 实现、测试与 Debug 证据](source/day08-part-vii-e-codex-implementation-source.md)
 
 ### Part VII-F：Abort + Single Active Run
 
@@ -144,7 +156,7 @@ VII-B 留给 VII-C 的 unresolved tool call 与参数契约已在当前正常工
 - [ ] 防止同一 Runtime / Session 并发执行
 - [ ] 防止并发写入造成状态竞争
 
-状态：**Planned**
+状态：**Next**（从 Run ownership、Abort propagation 与 reentrancy 边界开始 Architecture Analysis）
 
 ### Part VII-G：SessionStore + Conversation Recovery
 
@@ -208,8 +220,8 @@ Part VII-A  [Done]     项目骨架 + 类型体系 + ModelProvider
 Part VII-B  [Done]     RuntimeState + Agent Loop
 Part VII-C  [Done]     Tool Registry + Tool Executor + Error Contract
 Part VII-D  [Done]     ContextBuilder + TurnSnapshot
-Part VII-E  [Next]     AgentEvent + Subscriber
-Part VII-F  [Planned]  Abort + Single Active Run
+Part VII-E  [Done]     AgentEvent + Subscriber
+Part VII-F  [Next]     Abort + Single Active Run
 Part VII-G  [Planned]  SessionStore + Conversation Recovery
 Part VII-H  [Planned]  beforeToolCall + 简单 Approval
 Part VII-I  [Planned]  Weather Agent 完整链路

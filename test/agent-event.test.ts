@@ -1,11 +1,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type { AgentEvent } from "../src/runtime/agent-event.ts";
+import type { AgentEvent, AgentEventSubscriber } from "../src/runtime/agent-event.ts";
 import { AgentRuntime } from "../src/runtime/agent-runtime.ts";
 import type { ToolCall } from "../src/model/tool.ts";
 import { ToolRegistry } from "../src/tools/tool-registry.ts";
 import type { Tool } from "../src/tools/tool.ts";
 import { MockModelProvider } from "./support/mock-model-provider.ts";
+
+const synchronousSubscriber: AgentEventSubscriber = () => {};
+// @ts-expect-error async subscribers are intentionally unsupported
+const asynchronousSubscriber: AgentEventSubscriber = async () => {};
+void synchronousSubscriber;
+void asynchronousSubscriber;
 
 const finalResponse = {
   message: { role: "assistant" as const, content: "Done" },
@@ -126,7 +132,9 @@ test("tool error contract still completes the tool execution lifecycle", async (
     finalResponse,
   ]));
   const events: AgentEvent[] = [];
-  runtime.subscribe((event) => events.push(event));
+  runtime.subscribe((event) => {
+    events.push(event);
+  });
 
   await runtime.run("Use missing tool");
 
@@ -146,7 +154,9 @@ test("maxTurns writes skipped results without tool execution events", async () =
     { message: { role: "assistant", toolCalls: [call] }, finishReason: "tool_calls" },
   ]), { maxTurns: 1 });
   const events: AgentEvent[] = [];
-  runtime.subscribe((event) => events.push(event));
+  runtime.subscribe((event) => {
+    events.push(event);
+  });
 
   const outcome = await runtime.run("Stop at limit");
 
@@ -205,7 +215,9 @@ test("each subscriber receives payloads isolated from runtime facts and other su
     }
     if (event.type === "tool_execution_completed") event.message.content = "mutated result event";
   });
-  runtime.subscribe((event) => observed.push(event));
+  runtime.subscribe((event) => {
+    observed.push(event);
+  });
 
   await runtime.run("Add");
 
@@ -242,7 +254,9 @@ test("subscriber failures do not affect the run or other subscribers", async () 
   runtime.subscribe(() => {
     throw new Error("observer failed");
   });
-  runtime.subscribe((event) => observed.push(event));
+  runtime.subscribe((event) => {
+    observed.push(event);
+  });
 
   assert.deepEqual(await runtime.run("Hello"), { type: "completed" });
   assert.deepEqual(eventTypes(observed), [
@@ -272,7 +286,9 @@ test("provider errors propagate unchanged without run_finished", async () => {
     },
   });
   const events: AgentEvent[] = [];
-  runtime.subscribe((event) => events.push(event));
+  runtime.subscribe((event) => {
+    events.push(event);
+  });
 
   await assert.rejects(runtime.run("Hello"), (error: unknown) => error === providerError);
   assert.deepEqual(eventTypes(events), ["run_started", "model_turn_started"]);

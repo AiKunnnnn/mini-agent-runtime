@@ -10,4 +10,4 @@ export type AgentEvent =
   | { type: "tool_execution_completed"; message: RuntimeToolMessage }
   | { type: "run_finished"; outcome: RunOutcome };
 
-export type AgentEventSubscriber = (event: AgentEvent) => void;
+export type AgentEventSubscriber = (event: AgentEvent) => undefined;

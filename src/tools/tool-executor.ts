@@ -1,7 +1,15 @@
 import { Ajv, type ValidateFunction } from "ajv";
 import type { ToolCall } from "../model/tool.ts";
 import type { ToolRegistry } from "./tool-registry.ts";
-import type { ToolResult, ToolValue } from "./tool.ts";
+import type { ToolExecutionOptions, ToolResult, ToolValue } from "./tool.ts";
+
+/** Marks cancellation observed specifically at the Tool invocation boundary. */
+export class ToolExecutionCancelledError extends Error {
+  constructor(options: { cause: unknown }) {
+    super("Tool execution was cancelled.", options);
+    this.name = "ToolExecutionCancelledError";
+  }
+}
 
 export class ToolExecutor {
   // draft-07; no coercion, default insertion or removal of extra properties.
@@ -10,7 +18,7 @@ export class ToolExecutor {
 
   constructor(private readonly registry: ToolRegistry) {}
 
-  async execute(call: ToolCall): Promise<ToolResult> {
+  async execute(call: ToolCall, options?: ToolExecutionOptions): Promise<ToolResult> {
     const tool = this.registry.get(call.name);
     if (tool === undefined) {
       return { success: false, error: {
@@ -38,8 +46,11 @@ export class ToolExecutor {
     // Only tool invocation failures are normalized. Lookup, schema compilation,
     // validation and result serialization bugs deliberately propagate.
     try {
-      result = await tool.execute(args);
+      result = await tool.execute(args, options);
     } catch (error) {
+      if (options?.signal?.aborted) {
+        throw new ToolExecutionCancelledError({ cause: error });
+      }
       return { success: false, error: {
         code: "TOOL_EXECUTION_FAILED",
         message: error instanceof Error ? error.message : String(error),

@@ -9,13 +9,18 @@ import type { AgentEvent, AgentEventSubscriber } from "./agent-event.ts";
 import type { RuntimeState } from "./runtime-state.ts";
 import { ContextBuilder } from "./context-builder.ts";
 import { ToolRegistry } from "../tools/tool-registry.ts";
-import { ToolExecutor } from "../tools/tool-executor.ts";
+import { ToolExecutionCancelledError, ToolExecutor } from "../tools/tool-executor.ts";
 import type { ToolResult } from "../tools/tool.ts";
 
 export type RunOutcome =
   | { type: "completed" }
   | { type: "unsupported"; finishReason: Exclude<FinishReason, "stop" | "tool_calls"> }
-  | { type: "limit_reached"; maxTurns: number };
+  | { type: "limit_reached"; maxTurns: number }
+  | { type: "aborted" };
+
+export interface RunOptions {
+  signal?: AbortSignal;
+}
 
 export interface AgentRuntimeOptions {
   registry?: ToolRegistry;
@@ -30,6 +35,7 @@ export class AgentRuntime {
   readonly #executor: ToolExecutor;
   readonly #maxTurns: number;
   readonly #subscribers = new Set<AgentEventSubscriber>();
+  #active = false;
 
   constructor(provider: ModelProvider, options: AgentRuntimeOptions = {}) {
     this.#provider = provider;
@@ -68,18 +74,62 @@ export class AgentRuntime {
     return outcome;
   }
 
-  async run(userInput: string): Promise<RunOutcome> {
+  #appendCancelledToolCalls(calls: readonly { id: string }[]): void {
+    const cancelled: ToolResult = {
+      success: false,
+      error: {
+        code: "TOOL_CALL_CANCELLED",
+        message: "Tool call did not complete because the run was cancelled.",
+      },
+    };
+    for (const call of calls) {
+      this.#state.messages.push({
+        type: "tool_result",
+        toolCallId: call.id,
+        content: JSON.stringify(cancelled),
+      });
+    }
+  }
+
+  async run(userInput: string, options: RunOptions = {}): Promise<RunOutcome> {
+    if (this.#active) {
+      throw new Error("AgentRuntime already has an active run.");
+    }
+    this.#active = true;
+
+    try {
+      return await this.#run(userInput, options.signal);
+    } finally {
+      this.#active = false;
+    }
+  }
+
+  async #run(userInput: string, signal?: AbortSignal): Promise<RunOutcome> {
+    if (signal?.aborted) return { type: "aborted" };
+
     this.#state.messages.push({ type: "user_input", content: userInput });
     this.#emit({ type: "run_started" });
 
     for (let currentTurn = 1; currentTurn <= this.#maxTurns; currentTurn += 1) {
+      if (signal?.aborted) return this.#finish({ type: "aborted" });
       const snapshot = this.#contextBuilder.build({
         messages: this.#state.messages,
         tools: this.#registry.listDefinitions(),
       });
       const request: ModelRequest = snapshot;
       this.#emit({ type: "model_turn_started" });
-      const response = await this.#provider.generate(request);
+      if (signal?.aborted) return this.#finish({ type: "aborted" });
+      let response;
+      try {
+        response = await this.#provider.generate(
+          request,
+          signal === undefined ? undefined : { signal },
+        );
+      } catch (error) {
+        if (signal?.aborted) return this.#finish({ type: "aborted" });
+        throw error;
+      }
+      if (signal?.aborted) return this.#finish({ type: "aborted" });
       const message = response.message;
       const output: RuntimeAssistantMessage = {
         type: "model_output",
@@ -100,6 +150,10 @@ export class AgentRuntime {
           if (output.toolCalls === undefined || output.toolCalls.length === 0) {
             throw new Error("tool_calls finish reason requires at least one ToolCall.");
           }
+          if (signal?.aborted) {
+            this.#appendCancelledToolCalls(output.toolCalls);
+            return this.#finish({ type: "aborted" });
+          }
           if (currentTurn === this.#maxTurns) {
             const skipped: ToolResult = {
               success: false,
@@ -115,14 +169,40 @@ export class AgentRuntime {
             }
             return this.#finish({ type: "limit_reached", maxTurns: this.#maxTurns });
           }
-          for (const call of output.toolCalls) {
+          for (let index = 0; index < output.toolCalls.length; index += 1) {
+            const call = output.toolCalls[index];
+            if (call === undefined) throw new Error("ToolCall index is out of bounds.");
+            if (signal?.aborted) {
+              this.#appendCancelledToolCalls(output.toolCalls.slice(index));
+              return this.#finish({ type: "aborted" });
+            }
             this.#emit({ type: "tool_execution_started", toolCall: call });
-            const result = await this.#executor.execute(call);
+            if (signal?.aborted) {
+              this.#appendCancelledToolCalls(output.toolCalls.slice(index));
+              return this.#finish({ type: "aborted" });
+            }
+            let result: ToolResult;
+            try {
+              result = await this.#executor.execute(
+                call,
+                signal === undefined ? undefined : { signal },
+              );
+            } catch (error) {
+              if (error instanceof ToolExecutionCancelledError) {
+                this.#appendCancelledToolCalls(output.toolCalls.slice(index));
+                return this.#finish({ type: "aborted" });
+              }
+              throw error;
+            }
             const toolMessage: RuntimeToolMessage = {
               type: "tool_result", toolCallId: call.id, content: JSON.stringify(result),
             };
             this.#state.messages.push(toolMessage);
             this.#emit({ type: "tool_execution_completed", message: toolMessage });
+            if (signal?.aborted) {
+              this.#appendCancelledToolCalls(output.toolCalls.slice(index + 1));
+              return this.#finish({ type: "aborted" });
+            }
           }
           break;
         case "length":

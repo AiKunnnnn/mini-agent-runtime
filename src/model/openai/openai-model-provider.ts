@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import type { ModelProvider } from "../model-provider.ts";
+import type { ModelGenerationOptions, ModelProvider } from "../model-provider.ts";
 import type { ModelRequest, ModelResponse } from "../model.ts";
 import {
   fromOpenAICompletion,
@@ -25,13 +25,16 @@ export class OpenAIModelProvider implements ModelProvider {
     this.model = config.model;
   }
 
-  async generate(request: ModelRequest): Promise<ModelResponse> {
+  async generate(
+    request: ModelRequest,
+    options?: ModelGenerationOptions,
+  ): Promise<ModelResponse> {
     const tools = toOpenAITools(request.tools);
     const completion = await this.client.chat.completions.create({
       model: this.model,
       messages: request.messages.map(toOpenAIMessage),
       ...(tools === undefined ? {} : { tools }),
-    });
+    }, options?.signal === undefined ? undefined : { signal: options.signal });
 
     return fromOpenAICompletion(completion);
   }

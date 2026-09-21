@@ -14,7 +14,7 @@ export class ToolRegistry {
       definition,
       // Heterogeneous registry erases TArgs. Only call after validating against
       // this entry's parameters; ToolExecutor owns that boundary.
-      execute: (args) => execute(args as TArgs),
+      execute: (args, options) => execute(args as TArgs, options),
     });
   }
 

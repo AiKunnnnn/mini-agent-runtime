@@ -3,7 +3,10 @@ import type {
   RuntimeMessage,
   RuntimeToolMessage,
 } from "../messages/runtime-message.ts";
-import type { ModelProvider } from "../model/model-provider.ts";
+import {
+  ModelGenerationCancelledError,
+  type ModelProvider,
+} from "../model/model-provider.ts";
 import type { FinishReason, ModelRequest } from "../model/model.ts";
 import type { AgentEvent, AgentEventSubscriber } from "./agent-event.ts";
 import type { RuntimeState } from "./runtime-state.ts";
@@ -126,7 +129,13 @@ export class AgentRuntime {
           signal === undefined ? undefined : { signal },
         );
       } catch (error) {
-        if (signal?.aborted) return this.#finish({ type: "aborted" });
+        if (
+          signal?.aborted
+          && error instanceof ModelGenerationCancelledError
+          && error.signal === signal
+        ) {
+          return this.#finish({ type: "aborted" });
+        }
         throw error;
       }
       if (signal?.aborted) return this.#finish({ type: "aborted" });
@@ -188,7 +197,11 @@ export class AgentRuntime {
                 signal === undefined ? undefined : { signal },
               );
             } catch (error) {
-              if (error instanceof ToolExecutionCancelledError) {
+              if (
+                signal?.aborted
+                && error instanceof ToolExecutionCancelledError
+                && error.signal === signal
+              ) {
                 this.#appendCancelledToolCalls(output.toolCalls.slice(index));
                 return this.#finish({ type: "aborted" });
               }

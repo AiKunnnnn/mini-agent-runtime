@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type { ModelGenerationOptions, ModelProvider } from "../src/model/model-provider.ts";
+import {
+  ModelGenerationCancelledError,
+  type ModelGenerationOptions,
+  type ModelProvider,
+} from "../src/model/model-provider.ts";
 import type { ModelResponse } from "../src/model/model.ts";
 import type { AgentEvent } from "../src/runtime/agent-event.ts";
 import { AgentRuntime } from "../src/runtime/agent-runtime.ts";
@@ -150,7 +154,11 @@ test("provider rejection while the current signal is aborted settles the run as 
   const provider: ModelProvider = {
     generate(_request, options) {
       return new Promise((_resolve, reject) => {
-        options?.signal?.addEventListener("abort", () => reject(options.signal?.reason), { once: true });
+        const signal = options?.signal;
+        assert.ok(signal);
+        signal.addEventListener("abort", () => {
+          reject(new ModelGenerationCancelledError(signal, { cause: signal.reason }));
+        }, { once: true });
       });
     },
   };
@@ -158,6 +166,25 @@ test("provider rejection while the current signal is aborted settles the run as 
   const run = runtime.run("hello", { signal: controller.signal });
   controller.abort();
   assert.deepEqual(await run, { type: "aborted" });
+});
+
+test("an unrelated provider rejection racing with abort preserves identity and releases ownership", async () => {
+  const controller = new AbortController();
+  const error = new Error("independent provider failure");
+  let calls = 0;
+  const runtime = new AgentRuntime({
+    generate(_request, options) {
+      if (++calls > 1) return Promise.resolve(finalResponse);
+      return new Promise((_resolve, reject) => {
+        options?.signal?.addEventListener("abort", () => reject(error), { once: true });
+      });
+    },
+  });
+
+  const run = runtime.run("first", { signal: controller.signal });
+  controller.abort();
+  await assert.rejects(run, (actual: unknown) => actual === error);
+  assert.deepEqual(await runtime.run("second"), { type: "completed" });
 });
 
 test("an unrelated provider error preserves identity and releases ownership", async () => {
@@ -228,6 +255,36 @@ test("ToolExecutor passes the same signal and separates cooperative cancellation
     success: false,
     error: { code: "TOOL_EXECUTION_FAILED", message: "ordinary failure" },
   });
+});
+
+test("an unrelated tool rejection racing with abort remains TOOL_EXECUTION_FAILED", async () => {
+  const controller = new AbortController();
+  const ordinaryError = new Error("independent tool failure");
+  const registry = new ToolRegistry();
+  registry.register(cancellableTool(async (_args, options) => {
+    await new Promise<void>((_resolve, reject) => {
+      options?.signal?.addEventListener("abort", () => reject(ordinaryError), { once: true });
+    });
+    return "unreachable";
+  }));
+  const runtime = new AgentRuntime(new MockModelProvider([{
+    message: { role: "assistant", toolCalls: [
+      { id: "A", name: "work", arguments: { value: "A" } },
+    ] },
+    finishReason: "tool_calls",
+  }]), { registry });
+  const events: AgentEvent[] = [];
+  runtime.subscribe((event) => {
+    events.push(event);
+    if (event.type === "tool_execution_started") queueMicrotask(() => controller.abort());
+  });
+
+  assert.deepEqual(await runtime.run("work", { signal: controller.signal }), { type: "aborted" });
+  const result = toolResults(runtime).get("A");
+  assert.ok(result && !result.success);
+  assert.equal(result.error.code, "TOOL_EXECUTION_FAILED");
+  assert.equal(result.error.message, ordinaryError.message);
+  assert.ok(eventTypes(events).includes("tool_execution_completed"));
 });
 
 test("abort during a tool writes cancellation pairing without a completed event", async () => {

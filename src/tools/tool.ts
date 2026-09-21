@@ -3,6 +3,7 @@ import type { ToolDefinition } from "../model/tool.ts";
 export type ToolValue = null | boolean | number | string | ToolValue[] | { [key: string]: ToolValue };
 
 export interface ToolExecutionOptions {
+  /** Cooperative cancellation is reported by rejecting with this signal's reason. */
   signal?: AbortSignal;
 }
 

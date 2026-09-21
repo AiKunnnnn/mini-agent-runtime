@@ -5,7 +5,10 @@ import type { ToolExecutionOptions, ToolResult, ToolValue } from "./tool.ts";
 
 /** Marks cancellation observed specifically at the Tool invocation boundary. */
 export class ToolExecutionCancelledError extends Error {
-  constructor(options: { cause: unknown }) {
+  constructor(
+    readonly signal: AbortSignal,
+    options: { cause: unknown },
+  ) {
     super("Tool execution was cancelled.", options);
     this.name = "ToolExecutionCancelledError";
   }
@@ -48,8 +51,8 @@ export class ToolExecutor {
     try {
       result = await tool.execute(args, options);
     } catch (error) {
-      if (options?.signal?.aborted) {
-        throw new ToolExecutionCancelledError({ cause: error });
+      if (options?.signal?.aborted && error === options.signal.reason) {
+        throw new ToolExecutionCancelledError(options.signal, { cause: error });
       }
       return { success: false, error: {
         code: "TOOL_EXECUTION_FAILED",

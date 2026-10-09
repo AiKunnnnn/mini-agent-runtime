@@ -151,12 +151,26 @@ VII-B 留给 VII-C 的 unresolved tool call 与参数契约已在当前正常工
 
 ### Part VII-F：Abort + Single Active Run
 
-- [ ] Abort / Cancellation
-- [ ] 单会话 Single Active Run
-- [ ] 防止同一 Runtime / Session 并发执行
-- [ ] 防止并发写入造成状态竞争
+- [x] Caller-owned AbortSignal 与 cooperative cancellation
+- [x] 每个 AgentRuntime 实例 Single Active Run
+- [x] 并发／Subscriber 重入在 State mutation 前 Fail Fast
+- [x] Signal 传播到 ModelProvider、OpenAI SDK、ToolExecutor 与 Tool
+- [x] Provider／Tool cancellation provenance 与普通 failure 分离
+- [x] committed facts 保留、unresolved ToolCalls cancellation pairing
+- [x] 所有 settlement／exception 路径统一释放 ownership
+- [x] 75 项测试、build、严格测试类型检查与 deterministic demos
 
-状态：**Next**（从 Run ownership、Abort propagation 与 reentrancy 边界开始 Architecture Analysis）
+状态：**Done**（F-AD01～F-AD16 已落实；Cancellation Attribution Must Fix 已修复；未实现 Queue、Scheduler、Session、Approval 或 Durable Execution）
+
+学习记录：
+
+- [Day08 / Part VII-F：Abort + Single Active Run](day08-part-vii-f-abort-single-active-run.md)
+
+源记录：
+
+- [架构讨论与 Implementation Task](source/day08-part-vii-f-architecture-chatgpt-source.md)
+- [交付、Code Review 与 Closure](source/day08-part-vii-f-review-chatgpt-source.md)
+- [Codex 实现、测试与 Debug 证据](source/day08-part-vii-f-codex-implementation-source.md)
 
 ### Part VII-G：SessionStore + Conversation Recovery
 
@@ -165,7 +179,7 @@ VII-B 留给 VII-C 的 unresolved tool call 与参数契约已在当前正常工
 - [ ] Conversation 恢复
 - [ ] Runtime 重建后基于持久化状态继续对话
 
-状态：**Planned**
+状态：**Next**
 
 ### Part VII-H：beforeToolCall + 简单 Approval
 
@@ -221,8 +235,8 @@ Part VII-B  [Done]     RuntimeState + Agent Loop
 Part VII-C  [Done]     Tool Registry + Tool Executor + Error Contract
 Part VII-D  [Done]     ContextBuilder + TurnSnapshot
 Part VII-E  [Done]     AgentEvent + Subscriber
-Part VII-F  [Next]     Abort + Single Active Run
-Part VII-G  [Planned]  SessionStore + Conversation Recovery
+Part VII-F  [Done]     Abort + Single Active Run
+Part VII-G  [Next]     SessionStore + Conversation Recovery
 Part VII-H  [Planned]  beforeToolCall + 简单 Approval
 Part VII-I  [Planned]  Weather Agent 完整链路
 ```

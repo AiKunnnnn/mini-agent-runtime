@@ -30,7 +30,7 @@ mini-agent-runtime/
 当前已完成：
 
 - [Day08 / Part VII：Mini Agent Runtime 工程实现](notes/day08-mini-agent-runtime-implementation/README.md)
-- 当前进度：Part VII-A～VII-C 已完成并归档；下一 Milestone 为 VII-D：ContextBuilder + TurnSnapshot。
+- 当前代码包含 VII-A～VII-F，以及 VII-G 的 Conversation Persistence & Recovery 实现与测试；VII-G 待独立验证和 Review。
 
 ## 构建与测试
 
@@ -80,7 +80,7 @@ npm run demo:tools
 
 Demo Provider 第一回合请求 add(2, 3)，第二回合读取 Runtime 实际写回的 Tool Result 并据此生成回答。自动化测试独立验证成功、失败、顺序执行、预算及引用隔离。
 
-当前仅支持顺序调用；并发控制与恢复策略没有实现。达到上限时，Runtime 为最后一批未执行调用逐个写入失败结果，错误码为 `TOOL_EXECUTION_SKIPPED`，message 为 `Tool execution was skipped because maxTurns was reached.`。正常返回 `limit_reached` 后，调用与结果保持配对，后续 run 的请求会在这些结果之后追加新的用户输入。
+当前工具仅支持顺序调用；Runtime 保持 Single Active Run，Conversation Recovery 见下文。达到上限时，Runtime 为最后一批未执行调用逐个写入失败结果，错误码为 `TOOL_EXECUTION_SKIPPED`，message 为 `Tool execution was skipped because maxTurns was reached.`。正常返回 `limit_reached` 后，调用与结果保持配对，后续 run 的请求会在这些结果之后追加新的用户输入。
 
 配置好下文的 `.env` 后，运行真实 Runtime Demo：
 
@@ -89,6 +89,49 @@ npm run demo:runtime
 ```
 
 Demo 使用同一个 Runtime 先输入“我叫小明”，再询问“我叫什么名字？”，每轮打印 outcome 和完整历史。正常情况下，两轮均返回 `completed`，最终历史包含四条消息，第二轮回答引用“小明”。若未返回 `completed`，Demo 打印已保存历史并停止。该命令会调用真实 API。
+
+## Part VII-G：SessionStore + Conversation Recovery
+
+Application 在 Run settle 后读取并验证已提交历史，再保存完整 Snapshot。Runtime 不依赖 Store，State 仍然只有 messages；revision 只属于持久化 Session。
+
+```ts
+interface SessionSnapshot {
+  sessionId: string;
+  revision: number;
+  messages: RuntimeMessage[];
+}
+interface SessionStore {
+  load(sessionId: string): Promise<SessionSnapshot | null>;
+  save(snapshot: SessionSnapshot): Promise<SessionSnapshot>;
+}
+```
+
+`MemorySessionStore` 用于确定性测试；`SQLiteSessionStore(filename)` 打开或创建真实 SQLite 文件，调用方用 `close()` 关闭连接。SQLite 使用固定版本 `better-sqlite3@11.10.0`，保留 Node.js >=20 要求。该原生依赖需要对应 Node ABI 的预编译包或本机编译工具。
+
+`save()` 输入 revision 是 expected revision：0 仅用于创建，成功返回 1；更新成功递增 1。不匹配或更新不存在的 Session 抛出 `SessionConflictError`，不覆盖、不合并、不自动重试。revision 必须是非负安全整数，到 `Number.MAX_SAFE_INTEGER` 后不能继续保存。SQLite 创建使用唯一主键与 `ON CONFLICT DO NOTHING RETURNING`，更新使用 `WHERE session_id = ? AND revision = ? RETURNING`；单条数据库语句提供原子 CAS，无独立读取版本后的无条件写入。
+
+恢复必须明确要求 Session 存在，load 失败向上传播；不能回退成空会话：
+
+```ts
+const saved = await store.load(sessionId);
+if (saved === null) throw new Error("Saved session does not exist.");
+const runtime = new AgentRuntime(provider, { initialMessages: saved.messages });
+```
+
+构造时对 unknown 数据进行结构和协议校验，再深拷贝历史。恢复不调用模型或 Tool、不发事件，不要求历史工具仍注册。`validateConversation()` 同时保护 Store 和恢复入口：允许空历史、连续用户消息、只有用户输入的失败 Run、空模型输出、完整批次，以及 opaque 的 ToolResult 字符串；拒绝非法字段、不可无损 JSON 持久化的参数、重复调用 ID、孤立/重复/跨批次结果及未完成调用。不会解析 ToolResult 业务内容或因失败结果拒绝历史。调用 ID 在整个保存的 Conversation 中必须唯一；如果 Provider 重复使用 ID，该历史会被拒绝保存，不改变已提交 Runtime 事实。
+
+[应用层示例](src/demo/conversation-workflow.ts) 的 `runAndSave()` 分别返回 `run` 和 `persistence` settlement，保留原始错误对象。Provider Error 后的合法 user_input 仍可保存；保存错误不会覆盖 Provider Error、变成 aborted 或重新运行 Tool。`reusable` 表达当前 Application Workflow 是否可以安全继续下一次 Run → Save，不仅表示消息协议是否合法。保存成功时为 true，包括 Run rejected 但合法历史成功保存的情况；保存失败（包括 CAS Conflict）或快照非法时为 false。调用方必须显式处理这些失败，不能根据该流程自动继续下一轮。示例不会自动恢复、重试、加载 Session、回滚内存事实或重放 Tool。非法历史不保存、不修补；调用方应停止复用该 Runtime，可以显式加载最后一次成功保存的 Session 并创建新 Runtime。再次调用示例流程前也会校验历史，防止非法历史继续运行。Pre-aborted 且无新增消息时，persistence 为 skipped，reusable 为 true，不创建或递增 Session。
+
+调用方必须顺序 await `Run → Snapshot → Validate → Save → Next Run`，并使用保存返回的新 revision。Runtime 的 Active Run ownership 仅覆盖 run 本身；CAS 不提供跨 Runtime 执行锁。
+
+```bash
+npm run demo:recovery
+npm run typecheck:tests
+```
+
+Recovery Demo 使用确定性 Mock Provider 和临时文件数据库，展示首次运行、保存 revision 1、停用旧 Runtime、关闭重开 SQLite、恢复到新 Runtime、模型收到历史、第二次保存 revision 2；结束后清理临时数据库。`test/application-settlement.test.ts` 包含 Run 和 Save 同时失败的可观察示例。
+
+本阶段是 Conversation Recovery，不恢复 Promise、正在运行的 Loop、Tool 或 HTTP 请求；不提供 checkpoint、自动 retry、合并、队列或 SessionManager。
 
 ## 运行 Part VII-A Provider Demo
 

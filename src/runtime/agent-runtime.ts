@@ -1,3 +1,4 @@
+import { validateConversation } from "../messages/validate-conversation.ts";
 import type {
   RuntimeAssistantMessage,
   RuntimeMessage,
@@ -28,6 +29,7 @@ export interface RunOptions {
 export interface AgentRuntimeOptions {
   registry?: ToolRegistry;
   maxTurns?: number;
+  initialMessages?: RuntimeMessage[];
 }
 
 export class AgentRuntime {
@@ -41,6 +43,9 @@ export class AgentRuntime {
   #active = false;
 
   constructor(provider: ModelProvider, options: AgentRuntimeOptions = {}) {
+    const initialMessages = options.initialMessages === undefined ? [] : options.initialMessages;
+    validateConversation(initialMessages);
+    this.#state.messages = structuredClone(initialMessages);
     this.#provider = provider;
     this.#maxTurns = options.maxTurns ?? 5;
     if (!Number.isSafeInteger(this.#maxTurns) || this.#maxTurns < 1) {

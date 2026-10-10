@@ -30,7 +30,7 @@ mini-agent-runtime/
 当前已完成：
 
 - [Day08 / Part VII：Mini Agent Runtime 工程实现](notes/day08-mini-agent-runtime-implementation/README.md)
-- 当前代码包含 VII-A～VII-F，以及 VII-G 的 Conversation Persistence & Recovery 实现与测试；VII-G 待独立验证和 Review。
+- VII-A～VII-G 已完成；VII-G 的 Conversation Persistence & Recovery 已完成验证、MF-01 修复、最终 Review 与[工程学习归档](notes/day08-mini-agent-runtime-implementation/day08-part-vii-g-session-store-conversation-recovery.md)。VII-H 为 Next，VII-I 为 Planned。
 
 ## 构建与测试
 

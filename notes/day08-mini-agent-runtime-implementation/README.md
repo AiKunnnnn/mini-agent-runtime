@@ -174,12 +174,26 @@ VII-B 留给 VII-C 的 unresolved tool call 与参数契约已在当前正常工
 
 ### Part VII-G：SessionStore + Conversation Recovery
 
-- [ ] SessionStore
-- [ ] Conversation 保存
-- [ ] Conversation 恢复
-- [ ] Runtime 重建后基于持久化状态继续对话
+- [x] MemorySessionStore / SQLiteSessionStore 共享最小 load / save 契约
+- [x] expected revision CAS、显式 Conflict、引用隔离及溢出保护
+- [x] Run boundary 保存与 constructor initialMessages 恢复
+- [x] unknown 数据结构与完整 ToolCall batch pairing 校验
+- [x] SQLite 关闭／重开后，新 Runtime 基于历史继续对话
+- [x] Run / Persistence 独立 Settlement，保留原始错误对象
+- [x] MF-01：保存失败／CAS Conflict 后 reusable 为 false
+- [x] 176 项测试、build、严格测试类型检查与三个 Demo
 
-状态：**Next**
+状态：**Done**（G-AD01～G-AD20 已落实；MF-01 已修复并完成最终 Review 与 Closure；Node 20 尚未独立验证，不恢复执行中的 Run）
+
+学习记录：
+
+- [Day08 / Part VII-G：SessionStore + Conversation Recovery](day08-part-vii-g-session-store-conversation-recovery.md)
+
+源记录：
+
+- [架构分析、Design Decisions 与 Implementation Task（第 1～8 轮）](source/day08-part-vii-g-architecture-chatgpt-source.md)
+- [两轮 Review、MF-01 与固定 9 项收尾（第 9～14 轮）](source/day08-part-vii-g-review-chatgpt-source.md)
+- [Codex 实现、测试与 Debug 工程证据](source/day08-part-vii-g-codex-implementation-source.md)
 
 ### Part VII-H：beforeToolCall + 简单 Approval
 
@@ -188,7 +202,7 @@ VII-B 留给 VII-C 的 unresolved tool call 与参数契约已在当前正常工
 - [ ] 最小 Human Approval
 - [ ] 不实现 Durable Approval
 
-状态：**Planned**
+状态：**Next**
 
 ### Part VII-I：Weather Agent 完整链路
 
@@ -236,8 +250,8 @@ Part VII-C  [Done]     Tool Registry + Tool Executor + Error Contract
 Part VII-D  [Done]     ContextBuilder + TurnSnapshot
 Part VII-E  [Done]     AgentEvent + Subscriber
 Part VII-F  [Done]     Abort + Single Active Run
-Part VII-G  [Next]     SessionStore + Conversation Recovery
-Part VII-H  [Planned]  beforeToolCall + 简单 Approval
+Part VII-G  [Done]     SessionStore + Conversation Recovery
+Part VII-H  [Next]     beforeToolCall + 简单 Approval
 Part VII-I  [Planned]  Weather Agent 完整链路
 ```
 

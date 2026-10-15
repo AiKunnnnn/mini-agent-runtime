@@ -30,7 +30,7 @@ mini-agent-runtime/
 当前已完成：
 
 - [Day08 / Part VII：Mini Agent Runtime 工程实现](notes/day08-mini-agent-runtime-implementation/README.md)
-- VII-A～VII-G 已完成；VII-G 的 Conversation Persistence & Recovery 已完成验证、MF-01 修复、最终 Review 与[工程学习归档](notes/day08-mini-agent-runtime-implementation/day08-part-vii-g-session-store-conversation-recovery.md)。VII-H 为 Next，VII-I 为 Planned。
+- VII-A～VII-G 已完成；VII-G 的 Conversation Persistence & Recovery 已完成验证、MF-01 修复、最终 Review 与[工程学习归档](notes/day08-mini-agent-runtime-implementation/day08-part-vii-g-session-store-conversation-recovery.md)。VII-H 进入 Implementation + Runtime Verification，等待后续 Code Review；VII-I 为 Planned。
 
 ## 构建与测试
 
@@ -132,6 +132,43 @@ npm run typecheck:tests
 Recovery Demo 使用确定性 Mock Provider 和临时文件数据库，展示首次运行、保存 revision 1、停用旧 Runtime、关闭重开 SQLite、恢复到新 Runtime、模型收到历史、第二次保存 revision 2；结束后清理临时数据库。`test/application-settlement.test.ts` 包含 Run 和 Save 同时失败的可观察示例。
 
 本阶段是 Conversation Recovery，不恢复 Promise、正在运行的 Loop、Tool 或 HTTP 请求；不提供 checkpoint、自动 retry、合并、队列或 SessionManager。
+
+## Part VII-H：beforeToolCall + Simple Human Approval
+
+Application 可以在构造 Runtime 时注入可选的 `beforeToolCall`。Hook 位于 ToolExecutor 的 Registry Lookup 和 Ajv Validation 之后、`Tool.execute()` 之前；不存在的工具、非法参数以及 maxTurns 跳过的调用不会触发 Hook。直接使用 `new ToolExecutor(registry, { beforeToolCall })` 也支持同一契约，已有 `new ToolExecutor(registry)` 保持兼容。
+
+```ts
+import type { BeforeToolCallHook } from "./src/tools/before-tool-call.ts";
+
+// applicationApproval 是应用提供的异步人工确认 Handler。
+const beforeToolCall: BeforeToolCallHook = async ({ toolCall, signal }) => {
+  const approved = await applicationApproval(toolCall, signal);
+  return { type: approved ? "allow" : "deny" };
+};
+const runtime = new AgentRuntime(provider, { registry, beforeToolCall });
+const outcome = await runtime.run("执行需要批准的操作", { signal: controller.signal });
+```
+
+Hook 可以同步或异步返回最终 `allow` / `deny`；等待人工审批发生在 Application Handler 内部。`allow` 继续执行，`deny` 不调用 Tool 并产生 `TOOL_EXECUTION_DENIED`。同步 throw、Promise reject、非法返回值均不执行 Tool，产生 `TOOL_PRE_EXECUTION_FAILED`，固定消息为 `Pre-execution authorization failed.`，原始 Hook 错误不会回流模型。失败结果仍使用现有 tool_result，模型可以继续回答，拒绝不等于取消整个 Run。未配置 Hook 时保持原有执行行为。
+
+Hook 收到已通过 Schema 校验的 ToolCall 副本，修改其 ID、名称或嵌套 arguments 不会影响已记录历史和实际执行参数。Hook 接收 Caller 原始 AbortSignal；Executor 自己监听该 Signal，因此即使 Handler 永久 pending，Abort 也能结束审批等待并释放当前 Run。allow 后、真正调用 Tool 前仍检查取消。取消保留已提交结果，为当前及剩余调用补齐 `TOOL_CALL_CANCELLED`；迟到的 allow / reject 不会执行工具或增加结果。没有 Signal 时可以一直等待，本轮不设默认超时。
+
+六种 AgentEvent 及其时机保持不变。`tool_execution_started` 表示 Runtime 开始处理一次执行尝试，可能仍在等待审批，并不保证 `Tool.execute()` 已启动。deny / Hook Error 产生结果后发送原有 completed 事件；审批等待被 Abort 时不伪造 completed。Subscriber 只观察事件，不决定授权。
+
+最小 CLI Demo 使用确定性 ModelProvider 和模拟发布工具，依次显示 User → Model ToolCall → Application Approval → ToolResult → Model Final Answer，不访问网络或要求 API Key。人工输入与异步确认都位于 Application 层：
+
+```bash
+npm run demo:approval
+```
+
+输入公告标题后，用 `y` 批准，其他输入拒绝。自动化验证分别运行以下路径，无需人工输入；Demo 会断言 Hook / Tool 调用次数、完整唯一配对、RunOutcome 和基于实际 ToolResult 生成的最终回答：
+
+```bash
+npm run demo:approval -- --allow
+npm run demo:approval -- --deny
+```
+
+已结算的 deny / Hook Error / cancelled 结果可以按既有 Run Boundary 保存和恢复；恢复历史不会重新执行旧 Tool 或触发旧 Hook。在途 Approval、Promise、Signal 和 Handler 不保存，不能跨进程恢复审批。Abort 不保证物理撤销外部审批请求，也不能回滚已发生的 Tool 副作用；Application Hook 不能代替外部 API 自身的权限控制。本轮只实现简单 Human Approval，后续 Code Review 与 Theory Feedback 尚未完成。
 
 ## 运行 Part VII-A Provider Demo
 

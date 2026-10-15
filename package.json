@@ -9,6 +9,7 @@
     "demo": "tsx src/demo/openai-demo.ts",
     "demo:runtime": "tsx src/demo/runtime-demo.ts",
     "demo:tools": "tsx src/demo/tool-runtime-demo.ts",
+    "demo:approval": "tsx src/demo/approval-demo.ts",
     "demo:recovery": "tsx src/demo/conversation-recovery-demo.ts",
     "typecheck:tests": "tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext --allowImportingTsExtensions --strict --noUncheckedIndexedAccess --exactOptionalPropertyTypes --skipLibCheck test/*.test.ts test/support/*.ts"
   },

@@ -15,6 +15,7 @@ import { ContextBuilder } from "./context-builder.ts";
 import { ToolRegistry } from "../tools/tool-registry.ts";
 import { ToolExecutionCancelledError, ToolExecutor } from "../tools/tool-executor.ts";
 import type { ToolResult } from "../tools/tool.ts";
+import type { BeforeToolCallHook } from "../tools/before-tool-call.ts";
 
 export type RunOutcome =
   | { type: "completed" }
@@ -30,6 +31,7 @@ export interface AgentRuntimeOptions {
   registry?: ToolRegistry;
   maxTurns?: number;
   initialMessages?: RuntimeMessage[];
+  beforeToolCall?: BeforeToolCallHook;
 }
 
 export class AgentRuntime {
@@ -52,7 +54,9 @@ export class AgentRuntime {
       throw new RangeError("maxTurns must be a positive safe integer.");
     }
     this.#registry = options.registry ?? new ToolRegistry();
-    this.#executor = new ToolExecutor(this.#registry);
+    this.#executor = new ToolExecutor(this.#registry, {
+      ...(options.beforeToolCall === undefined ? {} : { beforeToolCall: options.beforeToolCall }),
+    });
   }
 
   /** Returns a detached copy, including nested tool call arguments. */

@@ -18,6 +18,8 @@ export interface ToolError {
     | "TOOL_NOT_FOUND"
     | "INVALID_ARGUMENTS"
     | "TOOL_EXECUTION_FAILED"
+    | "TOOL_EXECUTION_DENIED"
+    | "TOOL_PRE_EXECUTION_FAILED"
     | "TOOL_EXECUTION_SKIPPED"
     | "TOOL_CALL_CANCELLED";
   message: string;

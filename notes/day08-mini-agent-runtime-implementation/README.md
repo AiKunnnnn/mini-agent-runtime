@@ -197,48 +197,61 @@ VII-B 留给 VII-C 的 unresolved tool call 与参数契约已在当前正常工
 
 ### Part VII-H：beforeToolCall + 简单 Approval
 
-- [ ] beforeToolCall
-- [ ] Tool 执行前 Hook
-- [ ] 最小 Human Approval
-- [ ] 不实现 Durable Approval
+- [x] 构造注入可选 beforeToolCall，Runtime 转发、ToolExecutor 强制执行
+- [x] Registry Lookup → Ajv Validation → Hook → Tool.execute，未知工具／非法参数不触发 Hook
+- [x] 同步／异步 allow / deny，拒绝与 Hook Error 使用既有失败 ToolResult
+- [x] Hook 副本与历史／实际执行参数隔离，错误使用固定安全消息
+- [x] Caller-owned Signal 可中断永久 pending 的审批等待，保留取消归因与完整配对
+- [x] allow 后、Tool.execute 前仍检查 Abort，迟到 allow / reject 不重放工具或结果
+- [x] 保留六种 AgentEvent、messages-only State、Run boundary 保存和双 Settlement
+- [x] 最小 Application CLI Approval Demo，提供无需输入的 --allow / --deny 验证路径
+- [x] 229 项最终测试、build、npm run typecheck:tests、确定性 Demo 与最终 Review
+- [x] 不实现 Durable Approval，不持久化或恢复在途审批
 
-状态：**Next**
+状态：**Done**（H-DD01～H-DD10 已落实；最终 ChatGPT Review **PASS，Must Fix = 0**；工程学习归档与 Closure 完成）
+
+学习记录：
+
+- [Day08 / Part VII-H：beforeToolCall + Simple Human Approval](day08-part-vii-h-before-tool-call-simple-approval.md)
+
+源记录：
+
+- [架构分析、Design Decisions 与 Implementation Task](source/day08-part-vii-h-architecture-chatgpt-source.md)
+- [交付、最终 ChatGPT Review 与 Closure](source/day08-part-vii-h-review-chatgpt-source.md)
+- [Codex 实现、测试与 Debug 工程证据](source/day08-part-vii-h-codex-implementation-source.md)
 
 ### Part VII-I：Weather Agent 完整链路
 
 - [ ] 基于 VII-A～VII-H 的 Runtime Core 构建真实 Weather Agent
 - [ ] User → Agent Loop
-- [ ] Runtime → ContextBuilder → ModelProvider
+- [ ] Runtime 调用 ContextBuilder 构建 Snapshot，再独立调用 ModelProvider
 - [ ] LLM → Tool Call
-- [ ] beforeToolCall / Approval
-- [ ] Tool Execution → Observation
+- [ ] Runtime 将 ToolCall 交给 ToolExecutor
+- [ ] Executor：Registry Lookup → Ajv Validation → beforeToolCall / Approval → Tool Execution
+- [ ] ToolResult → Observation
 - [ ] Observation → RuntimeState → Agent Loop
 - [ ] Agent Loop → Final Answer
 
-状态：**Planned**
+状态：**Next**（尚未开始实现）
 
 最终集成链路：
 
 ```text
 User
  ↓
-Runtime
- ↓
-ContextBuilder
- ↓
-ModelProvider
- ↓
-Tool Call
- ↓
-beforeToolCall / Approval
- ↓
-Tool Executor
- ↓
-RuntimeState
- ↓
-Agent Loop
- ↓
-Final Answer
+AgentRuntime
+ ├─ 调用 ContextBuilder.build(messages, definitions) → TurnSnapshot
+ ├─ 调用 ModelProvider.generate(TurnSnapshot) → ToolCall / Final Answer
+ ├─ 调用 ToolExecutor.execute(ToolCall)
+ │    ├─ Registry Lookup
+ │    ├─ Ajv Validation
+ │    ├─ beforeToolCall / Application Approval
+ │    └─ allow → Tool.execute() → ToolResult
+ │       deny / Hook Error → Failed ToolResult
+ │       Abort → 取消传播，由 Runtime 补齐未完成调用
+ └─ 提交 ToolResult 到 RuntimeState.messages
+      ↓
+   下一轮 Agent Loop，直到 Final Answer 或其他 RunOutcome
 ```
 
 ## 当前进度
@@ -251,9 +264,11 @@ Part VII-D  [Done]     ContextBuilder + TurnSnapshot
 Part VII-E  [Done]     AgentEvent + Subscriber
 Part VII-F  [Done]     Abort + Single Active Run
 Part VII-G  [Done]     SessionStore + Conversation Recovery
-Part VII-H  [Next]     beforeToolCall + 简单 Approval
-Part VII-I  [Planned]  Weather Agent 完整链路
+Part VII-H  [Done]     beforeToolCall + 简单 Approval
+Part VII-I  [Next]     Weather Agent 完整链路
 ```
+
+当前已完成 VII-A～VII-H；最终测试基线为 **229 项通过、0 项失败**，最终 ChatGPT Review **PASS，Must Fix = 0**。VII-G 的 176 项是该阶段历史验收数量，不替换为 VII-H 的当前数量。VII-I 是下一项，本次归档没有开始 Weather Agent 的设计或实现，Part VII v1 仍固定为 A～I 九个 Milestone。
 
 ## Day08 工程原则
 

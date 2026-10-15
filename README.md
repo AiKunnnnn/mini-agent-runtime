@@ -30,7 +30,8 @@ mini-agent-runtime/
 当前已完成：
 
 - [Day08 / Part VII：Mini Agent Runtime 工程实现](notes/day08-mini-agent-runtime-implementation/README.md)
-- VII-A～VII-G 已完成；VII-G 的 Conversation Persistence & Recovery 已完成验证、MF-01 修复、最终 Review 与[工程学习归档](notes/day08-mini-agent-runtime-implementation/day08-part-vii-g-session-store-conversation-recovery.md)。VII-H 进入 Implementation + Runtime Verification，等待后续 Code Review；VII-I 为 Planned。
+- VII-A～VII-H 已完成；VII-H 的 beforeToolCall + Simple Human Approval 已通过最终 ChatGPT Review（**PASS，Must Fix = 0**），完成 [Engineering Learning Log 与 Milestone Closure](notes/day08-mini-agent-runtime-implementation/day08-part-vii-h-before-tool-call-simple-approval.md)。当前最终测试基线为 **229 项通过、0 项失败**。
+- Part VII v1 固定为 VII-A～VII-I 九个 Milestone；VII-I Weather Agent 为 **Next**，尚未开始实现。VII-G 的 [Conversation Persistence & Recovery 归档](notes/day08-mini-agent-runtime-implementation/day08-part-vii-g-session-store-conversation-recovery.md)保留其 176 项历史验收记录。
 
 ## 构建与测试
 
@@ -40,6 +41,7 @@ mini-agent-runtime/
 npm install
 npm run build
 npm test
+npm run typecheck:tests
 ```
 
 ## Part VII-C：Tool Registry + Tool Executor + Tool Loop
@@ -70,7 +72,7 @@ const history = runtime.getMessages();
 
 可执行 `Tool<TArgs>` 包含 `definition` 和 `execute(args)`；Tool 作者负责让 `definition.parameters` 描述 TArgs。Executor 使用同一份 JSON Schema，通过 Ajv（draft-07、严格模式、同步校验）校验 unknown 输入，不进行类型转换、补默认值或删除额外字段。Registry 保存 Schema 副本，对外返回副本，防止 Provider 或调用方更改执行规则。Executor 按名称缓存已编译校验器。
 
-工具返回 JSON 兼容值。既有 `RuntimeToolMessage.content` 保存 JSON：成功为 `{ success: true, result }`；失败为 `{ success: false, error: { code, message } }`，通过 `toolCallId` 对应之前记录的调用，工具名从该调用读取。错误码为 `TOOL_NOT_FOUND`、`INVALID_ARGUMENTS` 和 `TOOL_EXECUTION_FAILED`，均回流给模型。只有 execute 调用边界内的异常被规范化；无效 Schema、内部不变量或结果序列化错误继续抛出。无需修改 Provider Adapter 或消息类型。
+工具返回 JSON 兼容值。既有 `RuntimeToolMessage.content` 保存 JSON：成功为 `{ success: true, result }`；失败为 `{ success: false, error: { code, message } }`，通过 `toolCallId` 对应之前记录的调用，工具名从该调用读取。错误码为 `TOOL_NOT_FOUND`、`INVALID_ARGUMENTS` 和 `TOOL_EXECUTION_FAILED`，均回流给模型。原有工具异常仅在 execute 调用边界内规范化，VII-H 的 Hook 错误使用下文独立契约；无效 Schema、内部不变量或结果序列化错误继续抛出。无需修改 Provider Adapter 或消息类型。
 
 确定性 Tool Loop Demo（不访问网络，不调用真实 LLM）：
 
@@ -135,6 +137,8 @@ Recovery Demo 使用确定性 Mock Provider 和临时文件数据库，展示首
 
 ## Part VII-H：beforeToolCall + Simple Human Approval
 
+状态：**Done**。最终 ChatGPT Review **PASS，Must Fix = 0**；最终基线为 229 项测试通过。设计、代码与验证证据见 [Engineering Learning Log](notes/day08-mini-agent-runtime-implementation/day08-part-vii-h-before-tool-call-simple-approval.md)，对应 [Architecture Source](notes/day08-mini-agent-runtime-implementation/source/day08-part-vii-h-architecture-chatgpt-source.md)、[Review Source](notes/day08-mini-agent-runtime-implementation/source/day08-part-vii-h-review-chatgpt-source.md) 和 [Codex Implementation Source](notes/day08-mini-agent-runtime-implementation/source/day08-part-vii-h-codex-implementation-source.md)。
+
 Application 可以在构造 Runtime 时注入可选的 `beforeToolCall`。Hook 位于 ToolExecutor 的 Registry Lookup 和 Ajv Validation 之后、`Tool.execute()` 之前；不存在的工具、非法参数以及 maxTurns 跳过的调用不会触发 Hook。直接使用 `new ToolExecutor(registry, { beforeToolCall })` 也支持同一契约，已有 `new ToolExecutor(registry)` 保持兼容。
 
 ```ts
@@ -168,7 +172,7 @@ npm run demo:approval -- --allow
 npm run demo:approval -- --deny
 ```
 
-已结算的 deny / Hook Error / cancelled 结果可以按既有 Run Boundary 保存和恢复；恢复历史不会重新执行旧 Tool 或触发旧 Hook。在途 Approval、Promise、Signal 和 Handler 不保存，不能跨进程恢复审批。Abort 不保证物理撤销外部审批请求，也不能回滚已发生的 Tool 副作用；Application Hook 不能代替外部 API 自身的权限控制。本轮只实现简单 Human Approval，后续 Code Review 与 Theory Feedback 尚未完成。
+已结算的 deny / Hook Error / cancelled 结果可以按既有 Run Boundary 保存和恢复；恢复历史不会重新执行旧 Tool 或触发旧 Hook。在途 Approval、Promise、Signal 和 Handler 不保存，不能跨进程恢复审批。Abort 不保证物理撤销外部审批请求，也不能回滚已发生的 Tool 副作用；Application Hook 不能代替外部 API 自身的权限控制。本轮仅完成简单 Human Approval，未实现 Durable Approval；VII-I Weather Agent 留待下一阶段。
 
 ## 运行 Part VII-A Provider Demo
 
